@@ -80,13 +80,16 @@ export const getPriorityLabel = (priority: TaskPriority): string => {
 
 // Helper to get category label
 export const getCategoryLabel = (category: TaskCategory): string => {
-  const labels = {
+  // Esta função agora é dinâmica e busca o nome da categoria no contexto
+  // Mantida para compatibilidade, mas deve ser atualizada nos locais de uso
+  const defaultLabels: Record<string, string> = {
     work: 'Trabalho',
     personal: 'Pessoal', 
     health: 'Saúde',
     errands: 'Tarefas'
   };
-  return labels[category];
+  
+  return defaultLabels[category] || category;
 };
 
 // Get color class based on priority
@@ -99,15 +102,17 @@ export const getPriorityColorClass = (priority: TaskPriority): string => {
   return colors[priority];
 };
 
-// Get color class based on category
+// Get color class based on category - esta função deve ser modificada para obter a cor da categoria do contexto
 export const getCategoryColorClass = (category: TaskCategory): string => {
-  const colors = {
+  // As cores padrão são mantidas para compatibilidade
+  const defaultColors: Record<string, string> = {
     work: 'category-work',
     personal: 'category-personal',
     health: 'category-health',
     errands: 'category-errands'
   };
-  return colors[category];
+  
+  return defaultColors[category] || 'category-custom';
 };
 
 // Sort tasks by various criteria

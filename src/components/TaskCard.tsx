@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Check, Clock, Calendar, MoreVertical } from 'lucide-react';
 import { Task, useTaskContext } from '../context/TaskContext';
-import { formatDate, getCategoryLabel, getPriorityLabel, getCategoryColorClass } from '../lib/tasks';
+import { formatDate, getPriorityLabel } from '../lib/tasks';
 import { useNavigate } from 'react-router-dom';
 
 interface TaskCardProps {
@@ -12,10 +12,13 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
-  const { toggleTaskCompletion } = useTaskContext();
+  const { toggleTaskCompletion, categories } = useTaskContext();
   const navigate = useNavigate();
   
   const isPastDue = task.dueDate && new Date() > task.dueDate && !task.completed;
+  
+  // Buscar detalhes da categoria
+  const categoryInfo = categories.find(c => c.id === task.category);
   
   const handleCardClick = () => {
     navigate(`/tarefas/${task.id}`);
@@ -59,8 +62,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
             
             {/* Category badge */}
             <div className="mb-2">
-              <span className={`category-pill ${getCategoryColorClass(task.category)}`}>
-                {getCategoryLabel(task.category)}
+              <span 
+                className="inline-flex text-xs py-1 px-2.5 rounded-full text-white font-medium"
+                style={{ 
+                  backgroundColor: categoryInfo?.color || '#94a3b8'
+                }}
+              >
+                {categoryInfo?.name || task.category}
               </span>
             </div>
             

@@ -18,7 +18,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
   initialData = {}, 
   isEditing = false 
 }) => {
-  const { addTask, updateTask } = useTaskContext();
+  const { addTask, updateTask, categories } = useTaskContext();
   const navigate = useNavigate();
   
   const [title, setTitle] = useState(initialData.title || '');
@@ -170,10 +170,11 @@ const TaskForm: React.FC<TaskFormProps> = ({
               onChange={(e) => setCategory(e.target.value as TaskCategory)}
               className="block w-full px-4 py-2 border border-gray-200 rounded-md focus:ring-primary focus:border-primary"
             >
-              <option value="work">Trabalho</option>
-              <option value="personal">Pessoal</option>
-              <option value="health">Saúde</option>
-              <option value="errands">Tarefas</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
