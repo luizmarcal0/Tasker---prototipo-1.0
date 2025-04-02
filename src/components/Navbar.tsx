@@ -68,7 +68,9 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center">
             <Link 
               to="/configuracoes"
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className={`p-2 rounded-full hover:bg-gray-100 transition-colors ${
+                location.pathname === '/configuracoes' ? 'bg-gray-100 text-primary' : ''
+              }`}
               aria-label="Configurações"
             >
               <Settings className="w-5 h-5" />
@@ -106,7 +108,11 @@ const Navbar: React.FC = () => {
             ))}
             <Link
               to="/configuracoes"
-              className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
+              className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium ${
+                location.pathname === '/configuracoes'
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
             >
               <Settings className="w-5 h-5" />
               <span>Configurações</span>

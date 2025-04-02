@@ -8,6 +8,7 @@ import { TaskProvider } from "./context/TaskContext";
 import Index from "./pages/Index";
 import TaskDetail from "./pages/TaskDetail";
 import NotFound from "./pages/NotFound";
+import Settings from "./pages/Settings";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import TaskForm from "./components/TaskForm";
@@ -88,6 +89,7 @@ const App = () => (
             <Route path="/nova-tarefa" element={<NewTaskPage />} />
             <Route path="/tarefas/:id" element={<TaskDetail />} />
             <Route path="/tarefas/:id/editar" element={<EditTaskPage />} />
+            <Route path="/configuracoes" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
