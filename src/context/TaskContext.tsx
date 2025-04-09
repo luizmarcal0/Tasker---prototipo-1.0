@@ -29,6 +29,7 @@ interface TaskContextType {
   updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   toggleTaskCompletion: (id: string) => void;
+  clearCompletedTasks: () => void;
   categories: Category[];
   addCategory: (category: Omit<Category, 'id'>) => void;
   deleteCategory: (id: string) => void;
@@ -128,6 +129,10 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
+  const clearCompletedTasks = () => {
+    setTasks(prevTasks => prevTasks.filter(task => !task.completed));
+  };
+
   const addCategory = (categoryData: Omit<Category, 'id'>) => {
     const newCategory: Category = {
       ...categoryData,
@@ -156,6 +161,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updateTask, 
       deleteTask, 
       toggleTaskCompletion,
+      clearCompletedTasks,
       categories,
       addCategory,
       deleteCategory
