@@ -5,7 +5,7 @@ import { useTaskContext } from '../context/TaskContext';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import { Settings as SettingsIcon, Moon, Sun, BellRing, Trash2, Database, Save, RotateCcw } from 'lucide-react';
+import { Settings as SettingsIcon, Moon, Sun, BellRing, Trash2, Database, Save, RotateCcw, Accessibility } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Settings = () => {
@@ -28,6 +28,9 @@ const Settings = () => {
   const [autoSync, setAutoSync] = useState(() => {
     return localStorage.getItem('autoSync') !== 'false';
   });
+  const [accessibilityMode, setAccessibilityMode] = useState(() => {
+    return localStorage.getItem('accessibilityMode') === 'true';
+  });
 
   // Salvar configurações no localStorage quando mudarem
   useEffect(() => {
@@ -36,6 +39,7 @@ const Settings = () => {
     localStorage.setItem('taskReminders', taskReminders.toString());
     localStorage.setItem('deadlineNotifications', deadlineNotifications.toString());
     localStorage.setItem('autoSync', autoSync.toString());
+    localStorage.setItem('accessibilityMode', accessibilityMode.toString());
     
     // Aplicar tema escuro se ativado
     if (darkMode) {
@@ -47,7 +51,14 @@ const Settings = () => {
     // Aplicar brilho
     document.documentElement.style.filter = `brightness(${brightness / 100})`;
     
-  }, [darkMode, brightness, taskReminders, deadlineNotifications, autoSync]);
+    // Aplicar modo de acessibilidade
+    if (accessibilityMode) {
+      document.documentElement.classList.add('accessibility-mode');
+    } else {
+      document.documentElement.classList.remove('accessibility-mode');
+    }
+    
+  }, [darkMode, brightness, taskReminders, deadlineNotifications, autoSync, accessibilityMode]);
 
   const handleClearCompletedTasks = () => {
     clearCompletedTasks();
@@ -71,6 +82,7 @@ const Settings = () => {
     setTaskReminders(true);
     setDeadlineNotifications(true);
     setAutoSync(true);
+    setAccessibilityMode(false);
     
     toast({
       title: "Configurações resetadas",
@@ -118,6 +130,31 @@ const Settings = () => {
                   onValueChange={(values) => setBrightness(values[0])}
                 />
               </div>
+            </div>
+          </section>
+
+          {/* Accessibility Section */}
+          <section className={`glass-panel rounded-lg p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : ''}`}>
+            <h2 className="text-lg font-semibold mb-4">Acessibilidade</h2>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Accessibility className="h-5 w-5 mr-2 text-gray-600" />
+                  <span>Modo de acessibilidade</span>
+                </div>
+                <Switch 
+                  id="accessibility-mode" 
+                  checked={accessibilityMode}
+                  onCheckedChange={setAccessibilityMode}
+                />
+              </div>
+              
+              {accessibilityMode && (
+                <p className="text-sm text-gray-500">
+                  O modo de acessibilidade aumenta o tamanho de fontes, melhora o contraste e simplifica a interface para melhor legibilidade.
+                </p>
+              )}
             </div>
           </section>
 
