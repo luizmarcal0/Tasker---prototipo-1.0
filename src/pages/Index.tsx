@@ -6,9 +6,11 @@ import NewTaskButton from '../components/NewTaskButton';
 import { useTaskContext } from '../context/TaskContext';
 import { generateSampleTasks } from '../lib/tasks';
 import { CheckSquare, Plus, Calendar, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const { tasks, addTask } = useTaskContext();
+  const navigate = useNavigate();
 
   // Add sample tasks if none exist
   useEffect(() => {
@@ -25,6 +27,23 @@ const Index = () => {
       });
     }
   }, []);
+
+  // Handle feature card click navigation
+  const handleFeatureClick = (feature: string) => {
+    switch (feature) {
+      case 'organize':
+        navigate('/nova-tarefa');
+        break;
+      case 'prazos':
+        navigate('/tarefas');
+        break;
+      case 'progresso':
+        navigate('/configuracoes');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -48,28 +67,35 @@ const Index = () => {
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Organize Tarefas',
-                description: 'Crie e organize suas tarefas por categoria e prioridade'
+                description: 'Crie e organize suas tarefas por categoria e prioridade',
+                action: 'organize'
               },
               {
                 icon: <Calendar className="h-8 w-8 text-green-500" />,
                 title: 'Gerencie Prazos',
-                description: 'Defina datas de vencimento e receba lembretes'
+                description: 'Defina datas de vencimento e receba lembretes',
+                action: 'prazos'
               },
               {
                 icon: <Clock className="h-8 w-8 text-purple-500" />,
                 title: 'Acompanhe Progresso',
-                description: 'Visualize seu progresso e mantenha-se produtivo'
+                description: 'Visualize seu progresso e mantenha-se produtivo',
+                action: 'progresso'
               }
             ].map((feature, index) => (
-              <div 
+              <button 
                 key={index} 
-                className="glass-card p-6 rounded-lg flex flex-col items-center hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                onClick={() => handleFeatureClick(feature.action)}
+                className="glass-card p-6 rounded-lg flex flex-col items-center transition-all duration-300 
+                  hover:shadow-lg hover:-translate-y-2 hover:bg-white/95 focus:outline-none focus:ring-2 
+                  focus:ring-primary/50 active:translate-y-0 active:shadow-md cursor-pointer"
                 style={{ animationDelay: `${index * 100}ms` }}
+                aria-label={feature.title}
               >
                 <div className="mb-4 animate-float">{feature.icon}</div>
                 <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
                 <p className="text-gray-600 text-sm text-center">{feature.description}</p>
-              </div>
+              </button>
             ))}
           </div>
         </section>
@@ -79,7 +105,7 @@ const Index = () => {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Minhas Tarefas</h2>
             <button 
-              onClick={() => window.location.href = '/nova-tarefa'}
+              onClick={() => navigate('/nova-tarefa')}
               className="flex items-center text-sm px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors"
             >
               <Plus className="w-4 h-4 mr-1" />
