@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import TaskList from '../components/TaskList';
@@ -28,23 +27,6 @@ const Index = () => {
     }
   }, []);
 
-  // Handle feature card click navigation
-  const handleFeatureClick = (feature: string) => {
-    switch (feature) {
-      case 'organize':
-        navigate('/nova-tarefa');
-        break;
-      case 'prazos':
-        navigate('/tarefas');
-        break;
-      case 'progresso':
-        navigate('/configuracoes');
-        break;
-      default:
-        break;
-    }
-  };
-
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
@@ -67,35 +49,28 @@ const Index = () => {
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Organize Tarefas',
-                description: 'Crie e organize suas tarefas por categoria e prioridade',
-                action: 'organize'
+                description: 'Crie e organize suas tarefas por categoria e prioridade'
               },
               {
                 icon: <Calendar className="h-8 w-8 text-green-500" />,
                 title: 'Gerencie Prazos',
-                description: 'Defina datas de vencimento e receba lembretes',
-                action: 'prazos'
+                description: 'Defina datas de vencimento e receba lembretes'
               },
               {
                 icon: <Clock className="h-8 w-8 text-purple-500" />,
                 title: 'Acompanhe Progresso',
-                description: 'Visualize seu progresso e mantenha-se produtivo',
-                action: 'progresso'
+                description: 'Visualize seu progresso e mantenha-se produtivo'
               }
             ].map((feature, index) => (
-              <button 
-                key={index} 
-                onClick={() => handleFeatureClick(feature.action)}
-                className="glass-card p-6 rounded-lg flex flex-col items-center transition-all duration-300 
-                  hover:shadow-lg hover:-translate-y-2 hover:bg-white/95 focus:outline-none focus:ring-2 
-                  focus:ring-primary/50 active:translate-y-0 active:shadow-md cursor-pointer"
+              <div 
+                key={index}
+                className="glass-card p-6 rounded-lg flex flex-col items-center"
                 style={{ animationDelay: `${index * 100}ms` }}
-                aria-label={feature.title}
               >
-                <div className="mb-4 animate-float">{feature.icon}</div>
+                <div className="mb-4">{feature.icon}</div>
                 <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
                 <p className="text-gray-600 text-sm text-center">{feature.description}</p>
-              </button>
+              </div>
             ))}
           </div>
         </section>
