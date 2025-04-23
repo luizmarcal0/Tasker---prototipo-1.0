@@ -7,6 +7,7 @@ import { useTaskContext } from '../context/TaskContext';
 import { generateSampleTasks } from '../lib/tasks';
 import { CheckSquare, Plus, Calendar, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const { tasks, addTask } = useTaskContext();
@@ -50,28 +51,33 @@ const Index = () => {
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Organize Tarefas',
-                description: 'Crie e organize suas tarefas por categoria e prioridade'
+                description: 'Crie e organize suas tarefas por categoria e prioridade',
+                onClick: () => navigate('/nova-tarefa')
               },
               {
                 icon: <Calendar className="h-8 w-8 text-green-500" />,
                 title: 'Gerencie Prazos',
-                description: 'Defina datas de vencimento e receba lembretes'
+                description: 'Defina datas de vencimento e receba lembretes',
+                onClick: () => navigate('/tarefas')
               },
               {
                 icon: <Clock className="h-8 w-8 text-purple-500" />,
                 title: 'Acompanhe Progresso',
-                description: 'Visualize seu progresso e mantenha-se produtivo'
+                description: 'Visualize seu progresso e mantenha-se produtivo',
+                onClick: () => navigate('/tarefas')
               }
             ].map((feature, index) => (
-              <div 
+              <Button 
                 key={index}
-                className="glass-card p-6 rounded-lg flex flex-col items-center"
+                onClick={feature.onClick}
+                variant="ghost"
+                className="glass-card p-6 rounded-lg flex flex-col items-center h-auto w-full hover:bg-gray-100/50 transition-colors"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="mb-4">{feature.icon}</div>
                 <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
                 <p className="text-gray-600 text-sm text-center">{feature.description}</p>
-              </div>
+              </Button>
             ))}
           </div>
         </section>
