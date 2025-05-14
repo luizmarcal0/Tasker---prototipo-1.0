@@ -30,7 +30,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-100 min-h-screen">
       <Navbar />
       
       <main className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
@@ -51,31 +51,31 @@ const Index = () => {
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Organize Tarefas',
-                description: 'Crie tarefas por categoria',
+                description: 'Crie tarefas',
                 onClick: () => navigate('/nova-tarefa')
               },
               {
                 icon: <Calendar className="h-8 w-8 text-green-500" />,
                 title: 'Gerencie Prazos',
-                description: 'Defina datas e lembretes',
+                description: 'Defina datas',
                 onClick: () => navigate('/tarefas')
               },
               {
                 icon: <Clock className="h-8 w-8 text-purple-500" />,
                 title: 'Acompanhe Progresso',
-                description: 'Visualize seu progresso',
+                description: 'Veja progresso',
                 onClick: () => navigate('/tarefas')
               }
             ].map((feature, index) => (
               <Button 
                 key={index}
                 onClick={feature.onClick}
-                variant="ghost"
-                className="glass-card p-6 rounded-lg flex flex-col items-center h-auto w-full hover:bg-gray-100/50 transition-colors"
+                variant="outline"
+                className="feature-card p-6 rounded-lg flex flex-col items-center h-auto w-full hover:bg-white transition-colors border-2 border-gray-200 hover:border-gray-300 shadow-md hover:shadow-lg"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <div className="mb-3 bg-gray-50 p-3 rounded-full shadow-inner">{feature.icon}</div>
+                <h3 className="text-lg font-semibold mb-1">{feature.title}</h3>
                 <p className="text-gray-600 text-sm text-center">{feature.description}</p>
               </Button>
             ))}
@@ -83,16 +83,16 @@ const Index = () => {
         </section>
         
         {/* Tasks section */}
-        <section className="glass-panel rounded-lg p-6">
+        <section className="glass-panel rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Minhas Tarefas</h2>
-            <button 
+            <Button 
               onClick={() => navigate('/nova-tarefa')}
-              className="flex items-center text-sm px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors"
+              className="flex items-center text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow-md"
             >
               <Plus className="w-4 h-4 mr-1" />
               Nova Tarefa
-            </button>
+            </Button>
           </div>
           
           <TaskList />

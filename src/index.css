@@ -6,10 +6,10 @@
 
 @layer base {
   :root {
-    --background: 0 0% 97%;
+    --background: 0 0% 94%;
     --foreground: 240 10% 3.9%;
     
-    --card: 0 0% 99%;
+    --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     
     --popover: 0 0% 100%;
@@ -89,15 +89,53 @@
 }
 
 .glass-panel {
-  @apply bg-white/90 backdrop-blur-md border border-white/20 shadow-sm;
+  @apply bg-white backdrop-blur-md border border-white/20 shadow-lg;
 }
 
 .glass-card {
-  @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-sm transition-all duration-300;
+  @apply bg-white/90 backdrop-blur-sm border border-white/20 shadow-md transition-all duration-300;
 }
 
 .glass-card:hover {
-  @apply bg-white/90 shadow-md transform-gpu -translate-y-1;
+  @apply bg-white shadow-lg transform-gpu -translate-y-1;
+}
+
+.feature-card {
+  @apply bg-white/95 backdrop-blur-sm transition-all duration-300;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.feature-card:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-subtle {
+  0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.05); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
 }
 
 .animate-fade-in {
@@ -156,11 +194,11 @@
 
 /* Button animations */
 .btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md;
+  @apply bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 shadow-md;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300 shadow-sm;
+  @apply bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300 shadow-md;
 }
 
 .hover-scale {
@@ -173,15 +211,15 @@
 
 /* Update button styles for more prominence */
 .button-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all duration-300;
+  @apply bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition-all duration-300;
 }
 
 .button-secondary {
-  @apply bg-purple-600 text-white hover:bg-purple-700 shadow-md transition-all duration-300;
+  @apply bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg transition-all duration-300;
 }
 
 .button-success {
-  @apply bg-green-600 text-white hover:bg-green-700 shadow-md transition-all duration-300;
+  @apply bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg transition-all duration-300;
 }
 
 /* Page transitions */
