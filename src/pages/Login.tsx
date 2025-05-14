@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -217,12 +217,12 @@ const Login = () => {
             </form>
           )}
         </CardContent>
-        <CardFooter className="flex flex-col">
-          <p className="text-center text-sm text-gray-500 mt-2">
-            Credenciais para teste:
-          </p>
-          <p className="text-center text-xs text-gray-500">
-            Email: user@example.com | Senha: password123
+        <CardFooter className="flex justify-center">
+          <p className="text-center text-sm text-gray-500">
+            Não tem uma conta?{" "}
+            <Link to="/cadastro" className="text-primary font-medium hover:underline">
+              Cadastre-se
+            </Link>
           </p>
         </CardFooter>
       </Card>

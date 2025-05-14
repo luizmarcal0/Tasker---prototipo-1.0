@@ -14,6 +14,7 @@ import { useLocation } from "react-router-dom";
 import TaskForm from "./components/TaskForm";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ const App = () => (
           <ScrollToTop />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/cadastro" element={<Register />} />
             <Route path="/" element={
               <ProtectedRoute>
                 <Index />
