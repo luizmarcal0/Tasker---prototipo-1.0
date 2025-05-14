@@ -51,19 +51,19 @@ const Index = () => {
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Organize Tarefas',
-                description: 'Crie e organize suas tarefas por categoria e prioridade',
+                description: 'Crie tarefas por categoria',
                 onClick: () => navigate('/nova-tarefa')
               },
               {
                 icon: <Calendar className="h-8 w-8 text-green-500" />,
                 title: 'Gerencie Prazos',
-                description: 'Defina datas de vencimento e receba lembretes',
+                description: 'Defina datas e lembretes',
                 onClick: () => navigate('/tarefas')
               },
               {
                 icon: <Clock className="h-8 w-8 text-purple-500" />,
                 title: 'Acompanhe Progresso',
-                description: 'Visualize seu progresso e mantenha-se produtivo',
+                description: 'Visualize seu progresso',
                 onClick: () => navigate('/tarefas')
               }
             ].map((feature, index) => (
