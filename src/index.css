@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,10 +6,10 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 97%;
     --foreground: 240 10% 3.9%;
     
-    --card: 0 0% 100%;
+    --card: 0 0% 99%;
     --card-foreground: 240 10% 3.9%;
     
     --popover: 0 0% 100%;
@@ -157,11 +156,11 @@
 
 /* Button animations */
 .btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300;
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300;
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300 shadow-sm;
 }
 
 .hover-scale {
@@ -170,6 +169,19 @@
 
 .hover-lift {
   @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+}
+
+/* Update button styles for more prominence */
+.button-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all duration-300;
+}
+
+.button-secondary {
+  @apply bg-purple-600 text-white hover:bg-purple-700 shadow-md transition-all duration-300;
+}
+
+.button-success {
+  @apply bg-green-600 text-white hover:bg-green-700 shadow-md transition-all duration-300;
 }
 
 /* Page transitions */
