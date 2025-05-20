@@ -122,6 +122,14 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleForgotPassword = () => {
+    // Show a toast message informing the user about password reset
+    toast({
+      title: "Redefinição de senha",
+      description: "Instruções de redefinição foram enviadas para o seu e-mail.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg animate-fade-in">
@@ -156,7 +164,7 @@ const Login = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="exemplo@email.com"
+                      placeholder="Sormany@gmail.com"
                       className="pl-10"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -192,6 +200,17 @@ const Login = () => {
                       )}
                     </button>
                   </div>
+                </div>
+                
+                <div className="text-right">
+                  <Button 
+                    type="button" 
+                    variant="link" 
+                    className="p-0 h-auto text-primary"
+                    onClick={handleForgotPassword}
+                  >
+                    Esqueci minha senha
+                  </Button>
                 </div>
               </div>
 
