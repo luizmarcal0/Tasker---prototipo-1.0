@@ -15,6 +15,7 @@ import TaskForm from "./components/TaskForm";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -122,6 +123,11 @@ const App = () => (
             <Route path="/tarefas/:id/editar" element={
               <ProtectedRoute>
                 <EditTaskPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <Admin />
               </ProtectedRoute>
             } />
             <Route path="/configuracoes" element={
