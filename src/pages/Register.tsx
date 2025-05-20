@@ -6,7 +6,9 @@ import {
   Mail, 
   Phone, 
   Calendar, 
-  UserPlus
+  UserPlus,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,11 +27,12 @@ const formSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
   phone: z.string().min(10, 'Telefone deve ter pelo menos 10 dígitos'),
+  password: z.string().min(8, 'A senha deve ter pelo menos 8 caracteres'),
   age: z.preprocess(
     (value) => parseInt(String(value), 10) || 0,
-    z.number().min(18, 'Você deve ter pelo menos 18 anos').max(120, 'Idade inválida')
+    z.number().min(1, 'A idade deve ser um número positivo').max(120, 'Idade inválida')
   ),
-  gender: z.enum(['masculino', 'feminino', 'outro'], {
+  gender: z.enum(['masculino', 'feminino'], {
     required_error: 'Por favor selecione um gênero',
   }),
 });
@@ -40,6 +43,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -47,6 +51,7 @@ const Register = () => {
       name: '',
       email: '',
       phone: '',
+      password: '',
       age: undefined,
       gender: undefined,
     },
@@ -74,7 +79,6 @@ const Register = () => {
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       users.push({
         ...values,
-        password: 'password123', // In a real app, this would be set by the user and hashed
         id: Date.now(),
       });
       localStorage.setItem('users', JSON.stringify(users));
@@ -92,6 +96,10 @@ const Register = () => {
       
       setIsLoading(false);
     }, 1000);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -122,7 +130,7 @@ const Register = () => {
                       <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                       <FormControl>
                         <Input 
-                          placeholder="João Silva" 
+                          placeholder="Luiz Inacio Lula da Silva" 
                           className="pl-10" 
                           {...field} 
                           disabled={isLoading}
@@ -145,7 +153,7 @@ const Register = () => {
                       <FormControl>
                         <Input 
                           type="email" 
-                          placeholder="exemplo@email.com" 
+                          placeholder="Sormany@gmail.com" 
                           className="pl-10" 
                           {...field}
                           disabled={isLoading}
@@ -168,12 +176,46 @@ const Register = () => {
                       <FormControl>
                         <Input 
                           type="tel" 
-                          placeholder="(11) 99999-9999" 
+                          placeholder="(83) 4002-8922" 
                           className="pl-10" 
                           {...field}
                           disabled={isLoading}
                         />
                       </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <div className="relative">
+                      <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                      <FormControl>
+                        <Input 
+                          type={showPassword ? "text" : "password"} 
+                          placeholder="••••••••" 
+                          className="pl-10 pr-10" 
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <button 
+                        type="button"
+                        className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                        onClick={togglePasswordVisibility}
+                        tabIndex={-1}
+                      >
+                        {showPassword ? 
+                          <EyeOff className="h-5 w-5" /> : 
+                          <Eye className="h-5 w-5" />
+                        }
+                      </button>
                     </div>
                     <FormMessage />
                   </FormItem>
@@ -191,9 +233,17 @@ const Register = () => {
                       <FormControl>
                         <Input 
                           type="number" 
+                          min="1"
                           placeholder="25" 
                           className="pl-10" 
                           {...field}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            if (value < 1) {
+                              e.target.value = "1";
+                            }
+                            field.onChange(e);
+                          }}
                           disabled={isLoading}
                         />
                       </FormControl>
@@ -228,10 +278,6 @@ const Register = () => {
                             <User className="mr-2 h-4 w-4" />
                             Feminino
                           </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="outro" id="outro" disabled={isLoading} />
-                          <Label htmlFor="outro">Outro / Prefiro não dizer</Label>
                         </div>
                       </RadioGroup>
                     </FormControl>
