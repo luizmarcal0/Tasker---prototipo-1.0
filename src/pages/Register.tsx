@@ -6,9 +6,7 @@ import {
   Mail, 
   Phone, 
   Calendar, 
-  UserPlus,
-  GenderMale,
-  GenderFemale
+  UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -220,14 +218,14 @@ const Register = () => {
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="masculino" id="masculino" disabled={isLoading} />
                           <Label htmlFor="masculino" className="flex items-center">
-                            <GenderMale className="mr-2 h-4 w-4" />
+                            <User className="mr-2 h-4 w-4" />
                             Masculino
                           </Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="feminino" id="feminino" disabled={isLoading} />
                           <Label htmlFor="feminino" className="flex items-center">
-                            <GenderFemale className="mr-2 h-4 w-4" />
+                            <User className="mr-2 h-4 w-4" />
                             Feminino
                           </Label>
                         </div>
