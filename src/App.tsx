@@ -89,6 +89,23 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Admin route component to check if user is an admin
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const isAdmin = currentUser?.role === 'admin';
+  
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TaskProvider>
@@ -126,9 +143,9 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/admin" element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <Admin />
-              </ProtectedRoute>
+              </AdminRoute>
             } />
             <Route path="/configuracoes" element={
               <ProtectedRoute>

@@ -3,12 +3,11 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   User, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  UserPlus,
+  Mail,
   Eye,
-  EyeOff
+  EyeOff,
+  UserPlus,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,21 +19,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 // Define the form schema with validation rules
 const formSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
+  familyName: z.string().min(2, 'O nome da família deve ter pelo menos 2 caracteres'),
+  adminName: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
-  phone: z.string().min(10, 'Telefone deve ter pelo menos 10 dígitos'),
   password: z.string().min(8, 'A senha deve ter pelo menos 8 caracteres'),
-  age: z.preprocess(
-    (value) => parseInt(String(value), 10) || 0,
-    z.number().min(1, 'A idade deve ser um número positivo').max(120, 'Idade inválida')
-  ),
-  gender: z.enum(['masculino', 'feminino'], {
-    required_error: 'Por favor selecione um gênero',
-  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -48,12 +39,10 @@ const Register = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
+      familyName: '',
+      adminName: '',
       email: '',
-      phone: '',
       password: '',
-      age: undefined,
-      gender: undefined,
     },
   });
 
@@ -73,25 +62,51 @@ const Register = () => {
       }
       
       // Simulate successful registration
-      console.log('Registration data:', values);
+      console.log('Family registration data:', values);
       
-      // Store the user data in localStorage (in a real app, this would be sent to a server)
+      // Store the family data in localStorage (in a real app, this would be sent to a server)
+      const families = JSON.parse(localStorage.getItem('families') || '[]');
+      const familyId = Date.now().toString();
+      
+      const newFamily = {
+        id: familyId,
+        name: values.familyName,
+        createdAt: new Date().toISOString(),
+      };
+      
+      families.push(newFamily);
+      localStorage.setItem('families', JSON.stringify(families));
+      
+      // Store the admin user data
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       users.push({
-        ...values,
-        id: Date.now(),
+        id: Date.now().toString(),
+        name: values.adminName,
+        email: values.email,
+        password: values.password,
+        role: 'admin',
+        familyId: familyId,
+        createdAt: new Date().toISOString(),
       });
       localStorage.setItem('users', JSON.stringify(users));
       
+      // Set the current user as logged in
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('currentUser', JSON.stringify({
+        email: values.email,
+        role: 'admin',
+        familyId: familyId,
+      }));
+      
       // Show success message
       toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Você será redirecionado para a página de login.",
+        title: "Família criada com sucesso!",
+        description: "Você será redirecionado para o painel administrativo.",
       });
       
-      // Redirect to login page after a short delay
+      // Redirect to admin page after a short delay
       setTimeout(() => {
-        navigate('/login');
+        navigate('/admin');
       }, 1000);
       
       setIsLoading(false);
@@ -106,9 +121,9 @@ const Register = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg animate-fade-in">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Cadastre-se</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Crie sua Família</CardTitle>
           <CardDescription className="text-center">
-            Preencha seus dados para criar uma nova conta
+            Registre sua família para começar a gerenciar tarefas
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,10 +137,32 @@ const Register = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="name"
+                name="familyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome Completo</FormLabel>
+                    <FormLabel>Nome da Família</FormLabel>
+                    <div className="relative">
+                      <Users className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                      <FormControl>
+                        <Input 
+                          placeholder="Família Silva" 
+                          className="pl-10" 
+                          {...field} 
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="adminName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome do Administrador (Pai/Mãe)</FormLabel>
                     <div className="relative">
                       <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                       <FormControl>
@@ -147,36 +184,13 @@ const Register = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Email do Administrador</FormLabel>
                     <div className="relative">
                       <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                       <FormControl>
                         <Input 
                           type="email" 
                           placeholder="Sormany@gmail.com" 
-                          className="pl-10" 
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Telefone</FormLabel>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                      <FormControl>
-                        <Input 
-                          type="tel" 
-                          placeholder="(83) 4002-8922" 
                           className="pl-10" 
                           {...field}
                           disabled={isLoading}
@@ -221,70 +235,6 @@ const Register = () => {
                   </FormItem>
                 )}
               />
-              
-              <FormField
-                control={form.control}
-                name="age"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Idade</FormLabel>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          min="1"
-                          placeholder="25" 
-                          className="pl-10" 
-                          {...field}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value);
-                            if (value < 1) {
-                              e.target.value = "1";
-                            }
-                            field.onChange(e);
-                          }}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Gênero</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-col space-y-1"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="masculino" id="masculino" disabled={isLoading} />
-                          <Label htmlFor="masculino" className="flex items-center">
-                            <User className="mr-2 h-4 w-4" />
-                            Masculino
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="feminino" id="feminino" disabled={isLoading} />
-                          <Label htmlFor="feminino" className="flex items-center">
-                            <User className="mr-2 h-4 w-4" />
-                            Feminino
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <Button 
                 type="submit" 
@@ -301,7 +251,7 @@ const Register = () => {
                   </span>
                 ) : (
                   <span className="flex items-center justify-center">
-                    <UserPlus className="mr-2 h-4 w-4" /> Cadastrar
+                    <UserPlus className="mr-2 h-4 w-4" /> Criar Família
                   </span>
                 )}
               </Button>
@@ -310,7 +260,7 @@ const Register = () => {
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-center text-sm text-gray-500">
-            Já tem uma conta?{" "}
+            Já tem uma família?{" "}
             <Link to="/login" className="text-primary font-medium hover:underline">
               Faça login
             </Link>
