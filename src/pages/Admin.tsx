@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -29,18 +28,61 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTaskContext, Task, TaskCategory } from "@/context/TaskContext";
-import { Check, Plus, Star, Trash, User, Users } from 'lucide-react';
+import { 
+  Check, 
+  Plus, 
+  Star, 
+  Trash, 
+  User, 
+  Users, 
+  Trophy,
+  Crown,
+  Medal,
+  Copy,
+  RefreshCw,
+  Key,
+  BarChart3,
+  Target,
+  Award
+} from 'lucide-react';
 import Navbar from "@/components/Navbar";
 import { toast } from 'sonner';
 
-// Mock family members for the demo
+// Mock family members with more detailed data
 const MOCK_FAMILY_MEMBERS = [
-  { id: '1', name: 'Luiz Inacio Lula da Silva', email: 'Sormany@gmail.com', role: 'admin', points: 500 },
-  { id: '2', name: 'Filho 1', email: 'filho1@gmail.com', role: 'child', points: 250 },
-  { id: '3', name: 'Filho 2', email: 'filho2@gmail.com', role: 'child', points: 320 },
+  { 
+    id: '1', 
+    name: 'Luiz Inacio Lula da Silva', 
+    email: 'admin@familia.com', 
+    role: 'admin', 
+    points: 500,
+    completedTasks: 15,
+    pendingTasks: 3,
+    weeklyPoints: 120
+  },
+  { 
+    id: '2', 
+    name: 'Maria Silva', 
+    email: 'maria@familia.com', 
+    role: 'child', 
+    points: 450,
+    completedTasks: 18,
+    pendingTasks: 2,
+    weeklyPoints: 150
+  },
+  { 
+    id: '3', 
+    name: 'João Silva', 
+    email: 'joao@familia.com', 
+    role: 'child', 
+    points: 320,
+    completedTasks: 12,
+    pendingTasks: 4,
+    weeklyPoints: 80
+  },
 ];
 
-// Mock rewards data for the demo
+// Mock rewards data
 const MOCK_REWARDS = [
   { id: '1', name: 'Sorvete', points: 50, description: 'Um sorvete da sua escolha' },
   { id: '2', name: 'Videogame (1h)', points: 100, description: 'Uma hora extra de videogame' },
@@ -48,11 +90,28 @@ const MOCK_REWARDS = [
   { id: '4', name: 'Escolha do jantar', points: 150, description: 'Escolher o cardápio do jantar' },
 ];
 
+// Generate random family code
+const generateFamilyCode = () => {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+};
+
+// Generate random password
+const generatePassword = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
+  let password = '';
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+};
+
 const Admin = () => {
   const navigate = useNavigate();
   const { tasks, addTask, deleteTask, toggleTaskCompletion, categories } = useTaskContext();
   const [familyMembers, setFamilyMembers] = useState(MOCK_FAMILY_MEMBERS);
   const [rewards, setRewards] = useState(MOCK_REWARDS);
+  const [familyCode, setFamilyCode] = useState(generateFamilyCode());
+  const [generatedPassword, setGeneratedPassword] = useState('');
   
   // State for new family member form
   const [newMemberName, setNewMemberName] = useState('');
@@ -70,6 +129,40 @@ const Admin = () => {
   const [newTaskPoints, setNewTaskPoints] = useState('');
   const [newTaskCategory, setNewTaskCategory] = useState<TaskCategory>('personal');
 
+  // Copy to clipboard function
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copiado para a área de transferência`);
+  };
+
+  // Generate new family code
+  const handleGenerateNewCode = () => {
+    const newCode = generateFamilyCode();
+    setFamilyCode(newCode);
+    toast.success('Novo código de família gerado');
+  };
+
+  // Generate new password
+  const handleGeneratePassword = () => {
+    const newPassword = generatePassword();
+    setGeneratedPassword(newPassword);
+    toast.success('Nova senha gerada');
+  };
+
+  // Get sorted leaderboard
+  const getLeaderboard = () => {
+    return [...familyMembers]
+      .filter(member => member.role !== 'admin')
+      .sort((a, b) => b.points - a.points);
+  };
+
+  // Get weekly leaderboard
+  const getWeeklyLeaderboard = () => {
+    return [...familyMembers]
+      .filter(member => member.role !== 'admin')
+      .sort((a, b) => b.weeklyPoints - a.weeklyPoints);
+  };
+
   // Add new family member
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +177,10 @@ const Admin = () => {
       name: newMemberName,
       email: newMemberEmail,
       role: 'child',
-      points: 0
+      points: 0,
+      completedTasks: 0,
+      pendingTasks: 0,
+      weeklyPoints: 0
     };
     
     setFamilyMembers([...familyMembers, newMember]);
@@ -125,7 +221,6 @@ const Admin = () => {
       return;
     }
     
-    // In a real app, this task would be linked to the assigned family member
     addTask({
       title: `${newTaskTitle} (${familyMembers.find(m => m.id === newTaskAssignee)?.name})`,
       description: newTaskDescription,
@@ -159,36 +254,11 @@ const Admin = () => {
     setFamilyMembers(
       familyMembers.map(member => 
         member.id === memberId 
-          ? { ...member, points: member.points + points } 
+          ? { ...member, points: member.points + points, weeklyPoints: member.weeklyPoints + points } 
           : member
       )
     );
     toast.success(`${points} pontos adicionados`);
-  };
-  
-  // Redeem a reward for a family member
-  const handleRedeemReward = (memberId: string, rewardId: string, rewardPoints: number) => {
-    const member = familyMembers.find(m => m.id === memberId);
-    
-    if (!member) {
-      toast.error('Membro não encontrado');
-      return;
-    }
-    
-    if (member.points < rewardPoints) {
-      toast.error('Pontos insuficientes para resgatar esta recompensa');
-      return;
-    }
-    
-    setFamilyMembers(
-      familyMembers.map(m => 
-        m.id === memberId 
-          ? { ...m, points: m.points - rewardPoints } 
-          : m
-      )
-    );
-    
-    toast.success('Recompensa resgatada com sucesso');
   };
 
   return (
@@ -196,12 +266,16 @@ const Admin = () => {
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Painel Administrativo</h1>
+          <h1 className="text-2xl font-bold">Painel Administrativo da Família</h1>
           <Badge className="bg-indigo-600">Administrador</Badge>
         </div>
         
-        <Tabs defaultValue="family" className="w-full">
-          <TabsList className="grid grid-cols-3 mb-8">
+        <Tabs defaultValue="dashboard" className="w-full">
+          <TabsList className="grid grid-cols-5 mb-8">
+            <TabsTrigger value="dashboard">
+              <BarChart3 className="mr-2 h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
             <TabsTrigger value="family">
               <Users className="mr-2 h-4 w-4" />
               Família
@@ -214,8 +288,277 @@ const Admin = () => {
               <Star className="mr-2 h-4 w-4" />
               Recompensas
             </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Key className="mr-2 h-4 w-4" />
+              Configurações
+            </TabsTrigger>
           </TabsList>
-          
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              {/* Family Stats */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="mr-2 h-5 w-5" />
+                    Estatísticas da Família
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span>Total de Membros:</span>
+                      <Badge>{familyMembers.length}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tarefas Ativas:</span>
+                      <Badge variant="outline">{tasks.filter(t => !t.completed).length}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tarefas Concluídas:</span>
+                      <Badge className="bg-green-500">{tasks.filter(t => t.completed).length}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Total de Pontos:</span>
+                      <Badge className="bg-yellow-500">
+                        {familyMembers.reduce((total, member) => total + member.points, 0)}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Top Performer */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Crown className="mr-2 h-5 w-5 text-yellow-500" />
+                    Destaque do Mês
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {getLeaderboard().length > 0 && (
+                    <div className="text-center">
+                      <div className="mb-3">
+                        <Trophy className="h-12 w-12 text-yellow-500 mx-auto mb-2" />
+                        <h3 className="font-semibold text-lg">{getLeaderboard()[0].name}</h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="text-center">
+                          <div className="font-semibold text-yellow-600">{getLeaderboard()[0].points}</div>
+                          <div className="text-gray-500">Pontos</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold text-green-600">{getLeaderboard()[0].completedTasks}</div>
+                          <div className="text-gray-500">Tarefas</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Target className="mr-2 h-5 w-5" />
+                    Ações Rápidas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    onClick={() => navigate('/nova-tarefa')} 
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nova Tarefa
+                  </Button>
+                  <Button 
+                    onClick={handleGenerateNewCode} 
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Gerar Código
+                  </Button>
+                  <Button 
+                    onClick={handleGeneratePassword} 
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <Key className="mr-2 h-4 w-4" />
+                    Gerar Senha
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Leaderboards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Monthly Leaderboard */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
+                    Ranking Geral
+                  </CardTitle>
+                  <CardDescription>Classificação por pontos totais</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {getLeaderboard().map((member, index) => (
+                      <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full">
+                            {index === 0 && <Crown className="h-4 w-4 text-yellow-500" />}
+                            {index === 1 && <Medal className="h-4 w-4 text-gray-400" />}
+                            {index === 2 && <Medal className="h-4 w-4 text-orange-500" />}
+                            {index > 2 && <span className="text-sm font-semibold">{index + 1}</span>}
+                          </div>
+                          <div>
+                            <div className="font-medium">{member.name}</div>
+                            <div className="text-sm text-gray-500">
+                              {member.completedTasks} tarefas concluídas
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold text-yellow-600">{member.points}</div>
+                          <div className="text-xs text-gray-500">pontos</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Weekly Leaderboard */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Award className="mr-2 h-5 w-5 text-blue-500" />
+                    Ranking Semanal
+                  </CardTitle>
+                  <CardDescription>Pontos ganhos esta semana</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {getWeeklyLeaderboard().map((member, index) => (
+                      <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full">
+                            {index === 0 && <Crown className="h-4 w-4 text-blue-500" />}
+                            {index === 1 && <Medal className="h-4 w-4 text-gray-400" />}
+                            {index === 2 && <Medal className="h-4 w-4 text-orange-500" />}
+                            {index > 2 && <span className="text-sm font-semibold">{index + 1}</span>}
+                          </div>
+                          <div>
+                            <div className="font-medium">{member.name}</div>
+                            <div className="text-sm text-gray-500">
+                              {member.pendingTasks} tarefas pendentes
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold text-blue-600">{member.weeklyPoints}</div>
+                          <div className="text-xs text-gray-500">esta semana</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Family Code */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="mr-2 h-5 w-5" />
+                    Código da Família
+                  </CardTitle>
+                  <CardDescription>
+                    Use este código para que novos membros se juntem à família
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Input 
+                        value={familyCode} 
+                        readOnly 
+                        className="font-mono text-lg text-center bg-gray-50"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        onClick={() => copyToClipboard(familyCode, 'Código da família')}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Button 
+                      onClick={handleGenerateNewCode} 
+                      className="w-full"
+                      variant="outline"
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Gerar Novo Código
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Password Generator */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Key className="mr-2 h-5 w-5" />
+                    Gerador de Senhas
+                  </CardTitle>
+                  <CardDescription>
+                    Gere senhas seguras para os membros da família
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Input 
+                        value={generatedPassword} 
+                        readOnly 
+                        placeholder="Clique em gerar para criar uma senha"
+                        className="font-mono"
+                      />
+                      {generatedPassword && (
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => copyToClipboard(generatedPassword, 'Senha')}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <Button 
+                      onClick={handleGeneratePassword} 
+                      className="w-full"
+                    >
+                      <Key className="mr-2 h-4 w-4" />
+                      Gerar Nova Senha
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Family Members Tab */}
           <TabsContent value="family">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -320,7 +663,7 @@ const Admin = () => {
               </div>
             </div>
           </TabsContent>
-          
+
           {/* Tasks Tab */}
           <TabsContent value="tasks">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -466,7 +809,7 @@ const Admin = () => {
               </div>
             </div>
           </TabsContent>
-          
+
           {/* Rewards Tab */}
           <TabsContent value="rewards">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -510,43 +853,6 @@ const Admin = () => {
                         ))}
                       </TableBody>
                     </Table>
-                    
-                    <div className="mt-6">
-                      <h3 className="text-lg font-semibold mb-4">Resgatar Recompensa</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="redeem-member">Membro</Label>
-                          <select 
-                            id="redeem-member"
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            <option value="">Selecione um membro</option>
-                            {familyMembers.filter(m => m.role !== 'admin').map((member) => (
-                              <option key={member.id} value={member.id}>
-                                {member.name} ({member.points} pontos)
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="redeem-reward">Recompensa</Label>
-                          <select 
-                            id="redeem-reward"
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            <option value="">Selecione uma recompensa</option>
-                            {rewards.map((reward) => (
-                              <option key={reward.id} value={reward.id}>
-                                {reward.name} ({reward.points} pontos)
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                      <Button className="mt-4">
-                        Resgatar Recompensa
-                      </Button>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
