@@ -10,42 +10,45 @@ import TaskDetail from "./pages/TaskDetail";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import TaskForm from "./components/TaskForm";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
+import { useTaskContext } from "./context/TaskContext";
+import TaskList from "./components/TaskList";
 
 const queryClient = new QueryClient();
 
-// Create a TaskPage component for listing all tasks
-const TaskPage = () => {
+// Create a FamilyTaskPage component for listing all tasks
+const FamilyTaskPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Tarefas da Família</h1>
         <TaskList />
       </main>
     </div>
   );
 };
 
-// Create a NewTaskPage component for creating a new task
-const NewTaskPage = () => {
+// Create a NewFamilyTaskPage component for creating a new task
+const NewFamilyTaskPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Nova Tarefa</h1>
+        <h1 className="text-2xl font-bold mb-6">Nova Tarefa Familiar</h1>
         <TaskForm />
       </main>
     </div>
   );
 };
 
-// Create an EditTaskPage component for editing a task
-const EditTaskPage = () => {
+// Create an EditFamilyTaskPage component for editing a task
+const EditFamilyTaskPage = () => {
   const { id } = useParams<{ id: string }>();
   const { tasks } = useTaskContext();
   const navigate = useNavigate();
@@ -60,7 +63,7 @@ const EditTaskPage = () => {
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Editar Tarefa</h1>
+        <h1 className="text-2xl font-bold mb-6">Editar Tarefa Familiar</h1>
         <TaskForm initialData={task} isEditing={true} />
       </main>
     </div>
@@ -79,7 +82,7 @@ const ScrollToTop = () => {
 };
 
 // Protected route component to check if user is logged in
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const FamilyMemberRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   
   if (!isLoggedIn) {
@@ -89,8 +92,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Admin route component to check if user is an admin
-const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+// Admin route component to check if user is a family admin
+const FamilyAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const isAdmin = currentUser?.role === 'admin';
@@ -118,39 +121,39 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Register />} />
             <Route path="/" element={
-              <ProtectedRoute>
+              <FamilyMemberRoute>
                 <Index />
-              </ProtectedRoute>
+              </FamilyMemberRoute>
             } />
             <Route path="/tarefas" element={
-              <ProtectedRoute>
-                <TaskPage />
-              </ProtectedRoute>
+              <FamilyMemberRoute>
+                <FamilyTaskPage />
+              </FamilyMemberRoute>
             } />
             <Route path="/nova-tarefa" element={
-              <ProtectedRoute>
-                <NewTaskPage />
-              </ProtectedRoute>
+              <FamilyMemberRoute>
+                <NewFamilyTaskPage />
+              </FamilyMemberRoute>
             } />
             <Route path="/tarefas/:id" element={
-              <ProtectedRoute>
+              <FamilyMemberRoute>
                 <TaskDetail />
-              </ProtectedRoute>
+              </FamilyMemberRoute>
             } />
             <Route path="/tarefas/:id/editar" element={
-              <ProtectedRoute>
-                <EditTaskPage />
-              </ProtectedRoute>
+              <FamilyMemberRoute>
+                <EditFamilyTaskPage />
+              </FamilyMemberRoute>
             } />
             <Route path="/admin" element={
-              <AdminRoute>
+              <FamilyAdminRoute>
                 <Admin />
-              </AdminRoute>
+              </FamilyAdminRoute>
             } />
             <Route path="/configuracoes" element={
-              <ProtectedRoute>
+              <FamilyMemberRoute>
                 <Settings />
-              </ProtectedRoute>
+              </FamilyMemberRoute>
             } />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -159,10 +162,5 @@ const App = () => (
     </TaskProvider>
   </QueryClientProvider>
 );
-
-// Import required components
-import { useParams, useNavigate } from "react-router-dom";
-import { useTaskContext } from "./context/TaskContext";
-import TaskList from "./components/TaskList";
 
 export default App;

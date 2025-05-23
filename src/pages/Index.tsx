@@ -5,7 +5,7 @@ import TaskList from '../components/TaskList';
 import NewTaskButton from '../components/NewTaskButton';
 import { useTaskContext } from '../context/TaskContext';
 import { generateSampleTasks } from '../lib/tasks';
-import { CheckSquare, Plus, Calendar, Clock } from 'lucide-react';
+import { CheckSquare, Plus, Calendar, Clock, Users, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -29,6 +29,10 @@ const Index = () => {
     }
   }, []);
 
+  // Get the current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const familyName = currentUser?.familyName || 'Sua Família';
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
@@ -38,10 +42,10 @@ const Index = () => {
         <section className="mb-12 text-center">
           <div className="max-w-3xl mx-auto animate-fade-in">
             <h1 className="text-4xl font-bold mb-4 tracking-tight">
-              Organize suas tarefas com o Tasker
+              Organize sua Família com o FamíliaTasks
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              Gerencie suas tarefas diárias, defina prioridades e nunca mais perca um prazo.
+              Distribua tarefas, acompanhe o progresso e recompense membros da família por completar responsabilidades.
             </p>
           </div>
           
@@ -50,21 +54,21 @@ const Index = () => {
             {[
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
-                title: 'Organize Tarefas',
-                description: 'Crie tarefas',
+                title: 'Distribua Tarefas',
+                description: 'Crie e atribua tarefas para cada membro da família',
                 onClick: () => navigate('/nova-tarefa')
               },
               {
-                icon: <Calendar className="h-8 w-8 text-green-500" />,
-                title: 'Gerencie Prazos',
-                description: 'Defina datas',
-                onClick: () => navigate('/tarefas')
+                icon: <Star className="h-8 w-8 text-yellow-500" />,
+                title: 'Recompense Conquistas',
+                description: 'Incentive com pontos e prêmios personalizados',
+                onClick: () => navigate('/admin')
               },
               {
-                icon: <Clock className="h-8 w-8 text-purple-500" />,
-                title: 'Acompanhe Progresso',
-                description: 'Veja progresso',
-                onClick: () => navigate('/tarefas')
+                icon: <Users className="h-8 w-8 text-purple-500" />,
+                title: 'Gerencie a Família',
+                description: 'Acompanhe o progresso de todos os membros',
+                onClick: () => navigate('/admin')
               }
             ].map((feature, index) => (
               <Button 
@@ -85,7 +89,7 @@ const Index = () => {
         {/* Tasks section */}
         <section className="glass-panel rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Minhas Tarefas</h2>
+            <h2 className="text-2xl font-bold">Tarefas da Família {familyName}</h2>
             <Button 
               onClick={() => navigate('/nova-tarefa')}
               className="flex items-center text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow-md"

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, CheckSquare, Home, Plus, Settings } from 'lucide-react';
+import { Menu, X, CheckSquare, Home, Plus, Settings, Users, Family } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,7 +33,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { path: '/', label: 'Início', icon: <Home className="w-5 h-5" /> },
     { path: '/nova-tarefa', label: 'Nova Tarefa', icon: <Plus className="w-5 h-5" /> },
-    { path: '/tarefas', label: 'Minhas Tarefas', icon: <CheckSquare className="w-5 h-5" /> },
+    { path: '/tarefas', label: 'Tarefas da Família', icon: <CheckSquare className="w-5 h-5" /> },
   ];
 
   return (
@@ -43,9 +43,9 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="bg-primary rounded-md p-1.5">
-              <CheckSquare className="w-5 h-5 text-white" />
+              <Users className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-xl tracking-tight">Tasker</span>
+            <span className="font-bold text-xl tracking-tight">FamíliaTasks</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -64,8 +64,17 @@ const Navbar: React.FC = () => {
             ))}
           </nav>
 
-          {/* Settings (Desktop) */}
-          <div className="hidden md:flex items-center">
+          {/* Admin Link (Desktop) */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link 
+              to="/admin"
+              className={`flex items-center space-x-1 py-2 text-sm font-medium transition-colors hover:text-primary ${
+                location.pathname === '/admin' ? 'text-primary border-b-2 border-primary' : 'text-gray-600'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span>Painel Familiar</span>
+            </Link>
             <Link 
               to="/configuracoes"
               className={`p-2 rounded-full hover:bg-gray-100 transition-colors ${
@@ -106,6 +115,17 @@ const Navbar: React.FC = () => {
                 <span>{link.label}</span>
               </Link>
             ))}
+            <Link
+              to="/admin"
+              className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium ${
+                location.pathname === '/admin'
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span>Painel Familiar</span>
+            </Link>
             <Link
               to="/configuracoes"
               className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium ${
