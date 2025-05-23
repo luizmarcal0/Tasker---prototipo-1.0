@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, Mail, Lock, Shield, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,12 +9,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-
-// Mock users for demo purposes
-const MOCK_USERS = [
-  { email: 'user@example.com', password: 'password123', role: 'member' },
-  { email: 'admin@example.com', password: 'admin123', role: 'admin' }
-];
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,52 +25,39 @@ const Login = () => {
     setIsLoading(true);
     setError('');
 
-    setTimeout(() => {
-      if (loginType === 'admin') {
-        // Admin login logic
-        const admin = MOCK_USERS.find(u => u.email === email && u.password === password && u.role === 'admin');
-        
-        if (admin) {
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify({
-            email: email,
-            role: 'admin',
-            familyId: 'family123'
-          }));
-          toast({
-            title: "Login de administrador bem-sucedido!",
-            description: "Redirecionando para o painel administrativo.",
-          });
-          navigate('/admin');
-        } else {
-          setError('Credenciais de administrador inválidas.');
-        }
-      } else {
-        // Member login logic
-        if (!familyCode) {
-          setError('Código da família é obrigatório.');
-          setIsLoading(false);
-          return;
-        }
+    // Basic validation
+    if (!email || !password) {
+      setError('Email e senha são obrigatórios.');
+      setIsLoading(false);
+      return;
+    }
 
-        const user = MOCK_USERS.find(u => u.email === email && u.password === password);
-        
-        if (user) {
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify({
-            email: email,
-            role: 'member',
-            familyId: familyCode
-          }));
-          toast({
-            title: "Login bem-sucedido!",
-            description: "Você será redirecionado para a página inicial.",
-          });
-          navigate('/');
-        } else {
-          setError('Credenciais inválidas ou código da família incorreto.');
-        }
+    if (loginType === 'member' && !familyCode) {
+      setError('Código da família é obrigatório para membros.');
+      setIsLoading(false);
+      return;
+    }
+
+    setTimeout(() => {
+      // Simple login logic - accept any valid email/password combination
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('currentUser', JSON.stringify({
+        email: email,
+        role: loginType,
+        familyId: loginType === 'member' ? familyCode : 'admin-family'
+      }));
+      
+      toast({
+        title: "Login realizado com sucesso!",
+        description: `Bem-vindo${loginType === 'admin' ? ' ao painel administrativo' : ''}!`,
+      });
+      
+      if (loginType === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
       }
+      
       setIsLoading(false);
     }, 1000);
   };

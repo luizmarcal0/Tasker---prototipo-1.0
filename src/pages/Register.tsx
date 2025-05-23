@@ -39,15 +39,12 @@ const Register = () => {
     
     // Simulate API call delay
     setTimeout(() => {
-      // Clear all previous data
-      localStorage.clear();
-      
       // Generate family code
       const newFamilyCode = generateFamilyCode();
       setFamilyCode(newFamilyCode);
       setShowSuccess(true);
       
-      // Store minimal family data
+      // Store family data
       const familyData = {
         name: familyName,
         code: newFamilyCode,
