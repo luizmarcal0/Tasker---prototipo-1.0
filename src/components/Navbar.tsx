@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, CheckSquare, Home, Plus, Settings, Users } from 'lucide-react';
+import { Menu, X, CheckSquare, Home, Plus, Users } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,15 +75,6 @@ const Navbar: React.FC = () => {
               <Users className="w-5 h-5" />
               <span>Painel Familiar</span>
             </Link>
-            <Link 
-              to="/configuracoes"
-              className={`p-2 rounded-full hover:bg-gray-100 transition-colors ${
-                location.pathname === '/configuracoes' ? 'bg-gray-100 text-primary' : ''
-              }`}
-              aria-label="Configurações"
-            >
-              <Settings className="w-5 h-5" />
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -125,17 +116,6 @@ const Navbar: React.FC = () => {
             >
               <Users className="w-5 h-5" />
               <span>Painel Familiar</span>
-            </Link>
-            <Link
-              to="/configuracoes"
-              className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium ${
-                location.pathname === '/configuracoes'
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <Settings className="w-5 h-5" />
-              <span>Configurações</span>
             </Link>
           </div>
         </div>

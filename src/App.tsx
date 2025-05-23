@@ -8,7 +8,6 @@ import { TaskProvider } from "./context/TaskContext";
 import Index from "./pages/Index";
 import TaskDetail from "./pages/TaskDetail";
 import NotFound from "./pages/NotFound";
-import Settings from "./pages/Settings";
 import { useEffect } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import TaskForm from "./components/TaskForm";
@@ -149,11 +148,6 @@ const App = () => (
               <FamilyAdminRoute>
                 <Admin />
               </FamilyAdminRoute>
-            } />
-            <Route path="/configuracoes" element={
-              <FamilyMemberRoute>
-                <Settings />
-              </FamilyMemberRoute>
             } />
             <Route path="*" element={<NotFound />} />
           </Routes>

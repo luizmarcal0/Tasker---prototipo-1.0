@@ -2,14 +2,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  User, 
-  Mail,
-  Eye,
-  EyeOff,
-  UserPlus,
   Users,
   Shield,
-  Key
+  UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,12 +16,10 @@ import { toast } from '@/hooks/use-toast';
 const Register = () => {
   const navigate = useNavigate();
   const [familyName, setFamilyName] = useState('');
-  const [adminName, setAdminName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [familyCode, setFamilyCode] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const generateFamilyCode = () => {
     return 'FMLY' + Math.random().toString(36).substr(2, 6).toUpperCase();
@@ -38,86 +31,75 @@ const Register = () => {
     setError('');
     
     // Basic validation
-    if (!familyName || !adminName || !email || !password) {
-      setError('Todos os campos são obrigatórios.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 8) {
-      setError('A senha deve ter pelo menos 8 caracteres.');
+    if (!familyName) {
+      setError('O nome da família é obrigatório.');
       setIsLoading(false);
       return;
     }
     
     // Simulate API call delay
     setTimeout(() => {
-      // Check if email is already registered
-      const emailExists = ['user@example.com', 'admin@example.com'].includes(email);
-      
-      if (emailExists) {
-        setError('Este email já está cadastrado.');
-        setIsLoading(false);
-        return;
-      }
+      // Clear all previous data
+      localStorage.clear();
       
       // Generate family code
-      const familyCode = generateFamilyCode();
+      const newFamilyCode = generateFamilyCode();
+      setFamilyCode(newFamilyCode);
+      setShowSuccess(true);
       
-      // Store the family data in localStorage
-      const families = JSON.parse(localStorage.getItem('families') || '[]');
-      const familyId = Date.now().toString();
-      
-      const newFamily = {
-        id: familyId,
+      // Store minimal family data
+      const familyData = {
         name: familyName,
-        code: familyCode,
+        code: newFamilyCode,
         createdAt: new Date().toISOString(),
       };
       
-      families.push(newFamily);
-      localStorage.setItem('families', JSON.stringify(families));
-      
-      // Store the admin user data
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      users.push({
-        id: Date.now().toString(),
-        name: adminName,
-        email: email,
-        password: password,
-        role: 'admin',
-        familyId: familyId,
-        familyCode: familyCode,
-        createdAt: new Date().toISOString(),
-      });
-      localStorage.setItem('users', JSON.stringify(users));
-      
-      // Set the current user as logged in
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('currentUser', JSON.stringify({
-        email: email,
-        name: adminName,
-        role: 'admin',
-        familyId: familyId,
-        familyCode: familyCode,
-        familyName: familyName,
-      }));
+      localStorage.setItem('family', JSON.stringify(familyData));
       
       // Show success message
       toast({
         title: "Família criada com sucesso!",
-        description: `Código da família: ${familyCode}. Você será redirecionado para o painel administrativo.`,
+        description: `Código da família: ${newFamilyCode}`,
         duration: 5000,
       });
-      
-      // Redirect to admin page after a short delay
-      setTimeout(() => {
-        navigate('/admin');
-      }, 2000);
       
       setIsLoading(false);
     }, 1000);
   };
+
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-lg animate-fade-in">
+          <CardHeader className="space-y-1 text-center">
+            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <Shield className="w-6 h-6 text-green-600" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-green-600">Família Criada!</CardTitle>
+            <CardDescription>
+              Sua família foi criada com sucesso
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+              <p className="text-sm text-gray-600 mb-2">Código da Família:</p>
+              <p className="text-2xl font-bold text-blue-600 tracking-wider">{familyCode}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                Compartilhe este código com os membros da família
+              </p>
+            </div>
+            
+            <Button 
+              onClick={() => navigate('/login')}
+              className="w-full"
+            >
+              Ir para o Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -125,19 +107,18 @@ const Register = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Criar Nova Família</CardTitle>
           <CardDescription className="text-center">
-            Registre sua família e torne-se o administrador
+            Registre sua família e receba o código para compartilhar
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-2 text-blue-800 mb-2">
               <Shield className="w-5 h-5" />
-              <span className="font-semibold">Administrador da Família</span>
+              <span className="font-semibold">Criação de Família</span>
             </div>
-            <div className="flex items-center gap-2 text-blue-700 text-sm">
-              <Key className="w-4 h-4" />
-              <span>Você receberá um código único para adicionar membros</span>
-            </div>
+            <p className="text-blue-700 text-sm">
+              Após criar a família, você receberá um código único para compartilhar com os membros
+            </p>
           </div>
 
           {error && (
@@ -161,68 +142,6 @@ const Register = () => {
                   required
                 />
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="adminName">Nome do Administrador</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                <Input 
-                  id="adminName"
-                  placeholder="João Silva" 
-                  className="pl-10" 
-                  value={adminName}
-                  onChange={(e) => setAdminName(e.target.value)}
-                  disabled={isLoading}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email do Administrador</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                <Input 
-                  id="email"
-                  type="email" 
-                  placeholder="joao@familia.com" 
-                  className="pl-10" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                <Input 
-                  id="password"
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••" 
-                  className="pl-10 pr-10" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                  required
-                />
-                <button 
-                  type="button"
-                  className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
-                >
-                  {showPassword ? 
-                    <EyeOff className="h-5 w-5" /> : 
-                    <Eye className="h-5 w-5" />
-                  }
-                </button>
-              </div>
-              <p className="text-xs text-gray-500">Mínimo de 8 caracteres</p>
             </div>
 
             <Button 
