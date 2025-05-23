@@ -42,10 +42,10 @@ const Index = () => {
         <section className="mb-12 text-center">
           <div className="max-w-3xl mx-auto animate-fade-in">
             <h1 className="text-4xl font-bold mb-4 tracking-tight">
-              Organize sua Família com o FamíliaTasks
+              Organize sua Família com o Tasker
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              Distribua tarefas, acompanhe o progresso e recompense membros da família por completar responsabilidades.
+              Distribua tarefas, acompanhe o progresso e recompense membros da família.
             </p>
           </div>
           
@@ -55,19 +55,19 @@ const Index = () => {
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Distribua Tarefas',
-                description: 'Crie e atribua tarefas para cada membro da família',
+                description: 'Crie e atribua tarefas',
                 onClick: () => navigate('/nova-tarefa')
               },
               {
                 icon: <Star className="h-8 w-8 text-yellow-500" />,
-                title: 'Recompense Conquistas',
-                description: 'Incentive com pontos e prêmios personalizados',
+                title: 'Recompense',
+                description: 'Incentive com pontos',
                 onClick: () => navigate('/admin')
               },
               {
                 icon: <Users className="h-8 w-8 text-purple-500" />,
-                title: 'Gerencie a Família',
-                description: 'Acompanhe o progresso de todos os membros',
+                title: 'Gerencie',
+                description: 'Acompanhe o progresso',
                 onClick: () => navigate('/admin')
               }
             ].map((feature, index) => (
