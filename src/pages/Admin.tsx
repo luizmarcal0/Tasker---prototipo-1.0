@@ -28,6 +28,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
 import { useTaskContext, Task, TaskCategory } from "@/context/TaskContext";
 import { 
   Check, 
@@ -51,7 +56,7 @@ import {
 import Navbar from "@/components/Navbar";
 import { toast } from 'sonner';
 
-// Mock family members with only the admin user
+// Empty family members initially - clean for new families
 const MOCK_FAMILY_MEMBERS = [
   { 
     id: '1', 
@@ -101,6 +106,9 @@ const Admin = () => {
   const [newTaskAssignee, setNewTaskAssignee] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState('');
   const [newTaskCategory, setNewTaskCategory] = useState<TaskCategory>('personal');
+
+  // State for custom points input
+  const [customPoints, setCustomPoints] = useState<{[key: string]: string}>({});
 
   // Get sorted leaderboard
   const getLeaderboard = () => {
@@ -203,8 +211,14 @@ const Admin = () => {
     toast.success('Recompensa removida');
   };
   
-  // Award points to a family member
-  const handleAwardPoints = (memberId: string, points: number) => {
+  // Award custom points to a family member
+  const handleAwardCustomPoints = (memberId: string) => {
+    const points = parseInt(customPoints[memberId] || '0');
+    if (points <= 0) {
+      toast.error('Digite um valor válido de pontos');
+      return;
+    }
+    
     setFamilyMembers(
       familyMembers.map(member => 
         member.id === memberId 
@@ -212,11 +226,18 @@ const Admin = () => {
           : member
       )
     );
+    setCustomPoints({ ...customPoints, [memberId]: '' });
     toast.success(`${points} pontos adicionados`);
   };
 
-  // Remove points from a family member
-  const handleRemovePoints = (memberId: string, points: number) => {
+  // Remove custom points from a family member
+  const handleRemoveCustomPoints = (memberId: string) => {
+    const points = parseInt(customPoints[memberId] || '0');
+    if (points <= 0) {
+      toast.error('Digite um valor válido de pontos');
+      return;
+    }
+    
     setFamilyMembers(
       familyMembers.map(member => 
         member.id === memberId 
@@ -228,6 +249,7 @@ const Admin = () => {
           : member
       )
     );
+    setCustomPoints({ ...customPoints, [memberId]: '' });
     toast.success(`${points} pontos removidos`);
   };
 
@@ -498,22 +520,60 @@ const Admin = () => {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="flex space-x-1">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={() => handleAwardPoints(member.id, 50)}
-                                >
-                                  +50
-                                </Button>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={() => handleRemovePoints(member.id, 50)}
-                                >
-                                  <Minus className="h-4 w-4" />
-                                  50
-                                </Button>
+                              <div className="flex items-center space-x-2">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      <Plus className="h-4 w-4" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-64">
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label>Adicionar Pontos</Label>
+                                        <div className="flex space-x-2 mt-1">
+                                          <Input 
+                                            type="number"
+                                            placeholder="Pontos"
+                                            value={customPoints[member.id] || ''}
+                                            onChange={(e) => setCustomPoints({
+                                              ...customPoints, 
+                                              [member.id]: e.target.value
+                                            })}
+                                          />
+                                          <Button 
+                                            size="sm" 
+                                            onClick={() => handleAwardCustomPoints(member.id)}
+                                          >
+                                            +
+                                          </Button>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <Label>Remover Pontos</Label>
+                                        <div className="flex space-x-2 mt-1">
+                                          <Input 
+                                            type="number"
+                                            placeholder="Pontos"
+                                            value={customPoints[member.id] || ''}
+                                            onChange={(e) => setCustomPoints({
+                                              ...customPoints, 
+                                              [member.id]: e.target.value
+                                            })}
+                                          />
+                                          <Button 
+                                            size="sm" 
+                                            variant="outline"
+                                            onClick={() => handleRemoveCustomPoints(member.id)}
+                                          >
+                                            <Minus className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                                
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
