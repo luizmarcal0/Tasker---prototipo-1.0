@@ -271,7 +271,7 @@ const Admin = () => {
         </div>
         
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid grid-cols-5 mb-8">
+          <TabsList className="grid grid-cols-4 mb-8">
             <TabsTrigger value="dashboard">
               <BarChart3 className="mr-2 h-4 w-4" />
               Dashboard
@@ -287,10 +287,6 @@ const Admin = () => {
             <TabsTrigger value="rewards">
               <Star className="mr-2 h-4 w-4" />
               Recompensas
-            </TabsTrigger>
-            <TabsTrigger value="settings">
-              <Key className="mr-2 h-4 w-4" />
-              Configurações
             </TabsTrigger>
           </TabsList>
 
@@ -376,22 +372,6 @@ const Admin = () => {
                     <Plus className="mr-2 h-4 w-4" />
                     Nova Tarefa
                   </Button>
-                  <Button 
-                    onClick={handleGenerateNewCode} 
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Gerar Código
-                  </Button>
-                  <Button 
-                    onClick={handleGeneratePassword} 
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Key className="mr-2 h-4 w-4" />
-                    Gerar Senha
-                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -468,91 +448,6 @@ const Admin = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Family Code */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Users className="mr-2 h-5 w-5" />
-                    Código da Família
-                  </CardTitle>
-                  <CardDescription>
-                    Use este código para que novos membros se juntem à família
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Input 
-                        value={familyCode} 
-                        readOnly 
-                        className="font-mono text-lg text-center bg-gray-50"
-                      />
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        onClick={() => copyToClipboard(familyCode, 'Código da família')}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <Button 
-                      onClick={handleGenerateNewCode} 
-                      className="w-full"
-                      variant="outline"
-                    >
-                      <RefreshCw className="mr-2 h-4 w-4" />
-                      Gerar Novo Código
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Password Generator */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Key className="mr-2 h-5 w-5" />
-                    Gerador de Senhas
-                  </CardTitle>
-                  <CardDescription>
-                    Gere senhas seguras para os membros da família
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Input 
-                        value={generatedPassword} 
-                        readOnly 
-                        placeholder="Clique em gerar para criar uma senha"
-                        className="font-mono"
-                      />
-                      {generatedPassword && (
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => copyToClipboard(generatedPassword, 'Senha')}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                    <Button 
-                      onClick={handleGeneratePassword} 
-                      className="w-full"
-                    >
-                      <Key className="mr-2 h-4 w-4" />
-                      Gerar Nova Senha
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
