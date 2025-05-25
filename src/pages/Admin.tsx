@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -48,7 +49,7 @@ import {
 import Navbar from "@/components/Navbar";
 import { toast } from 'sonner';
 
-// Mock family members with more detailed data
+// Mock family members with only the admin user
 const MOCK_FAMILY_MEMBERS = [
   { 
     id: '1', 
@@ -59,27 +60,7 @@ const MOCK_FAMILY_MEMBERS = [
     completedTasks: 15,
     pendingTasks: 3,
     weeklyPoints: 120
-  },
-  { 
-    id: '2', 
-    name: 'Maria Silva', 
-    email: 'maria@familia.com', 
-    role: 'child', 
-    points: 450,
-    completedTasks: 18,
-    pendingTasks: 2,
-    weeklyPoints: 150
-  },
-  { 
-    id: '3', 
-    name: 'João Silva', 
-    email: 'joao@familia.com', 
-    role: 'child', 
-    points: 320,
-    completedTasks: 12,
-    pendingTasks: 4,
-    weeklyPoints: 80
-  },
+  }
 ];
 
 // Mock rewards data
@@ -95,27 +76,17 @@ const generateFamilyCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-// Generate random password
-const generatePassword = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-  let password = '';
-  for (let i = 0; i < 12; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return password;
-};
-
 const Admin = () => {
   const navigate = useNavigate();
   const { tasks, addTask, deleteTask, toggleTaskCompletion, categories } = useTaskContext();
   const [familyMembers, setFamilyMembers] = useState(MOCK_FAMILY_MEMBERS);
   const [rewards, setRewards] = useState(MOCK_REWARDS);
   const [familyCode, setFamilyCode] = useState(generateFamilyCode());
-  const [generatedPassword, setGeneratedPassword] = useState('');
   
   // State for new family member form
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberPassword, setNewMemberPassword] = useState('');
   
   // State for new reward form
   const [newRewardName, setNewRewardName] = useState('');
@@ -128,26 +99,6 @@ const Admin = () => {
   const [newTaskAssignee, setNewTaskAssignee] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState('');
   const [newTaskCategory, setNewTaskCategory] = useState<TaskCategory>('personal');
-
-  // Copy to clipboard function
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copiado para a área de transferência`);
-  };
-
-  // Generate new family code
-  const handleGenerateNewCode = () => {
-    const newCode = generateFamilyCode();
-    setFamilyCode(newCode);
-    toast.success('Novo código de família gerado');
-  };
-
-  // Generate new password
-  const handleGeneratePassword = () => {
-    const newPassword = generatePassword();
-    setGeneratedPassword(newPassword);
-    toast.success('Nova senha gerada');
-  };
 
   // Get sorted leaderboard
   const getLeaderboard = () => {
@@ -167,7 +118,7 @@ const Admin = () => {
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newMemberName || !newMemberEmail) {
+    if (!newMemberName || !newMemberEmail || !newMemberPassword) {
       toast.error('Por favor preencha todos os campos');
       return;
     }
@@ -186,6 +137,7 @@ const Admin = () => {
     setFamilyMembers([...familyMembers, newMember]);
     setNewMemberName('');
     setNewMemberEmail('');
+    setNewMemberPassword('');
     toast.success('Membro da família adicionado');
   };
   
@@ -271,7 +223,7 @@ const Admin = () => {
         </div>
         
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid grid-cols-4 mb-8">
+          <TabsList className="grid grid-cols-3 mb-8">
             <TabsTrigger value="dashboard">
               <BarChart3 className="mr-2 h-4 w-4" />
               Dashboard
@@ -283,10 +235,6 @@ const Admin = () => {
             <TabsTrigger value="tasks">
               <Check className="mr-2 h-4 w-4" />
               Tarefas
-            </TabsTrigger>
-            <TabsTrigger value="rewards">
-              <Star className="mr-2 h-4 w-4" />
-              Recompensas
             </TabsTrigger>
           </TabsList>
 
@@ -334,7 +282,7 @@ const Admin = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {getLeaderboard().length > 0 && (
+                  {getLeaderboard().length > 0 ? (
                     <div className="text-center">
                       <div className="mb-3">
                         <Trophy className="h-12 w-12 text-yellow-500 mx-auto mb-2" />
@@ -350,6 +298,10 @@ const Admin = () => {
                           <div className="text-gray-500">Tarefas</div>
                         </div>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="text-center text-gray-500">
+                      Nenhum membro da família ainda
                     </div>
                   )}
                 </CardContent>
@@ -389,28 +341,34 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {getLeaderboard().map((member, index) => (
-                      <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full">
-                            {index === 0 && <Crown className="h-4 w-4 text-yellow-500" />}
-                            {index === 1 && <Medal className="h-4 w-4 text-gray-400" />}
-                            {index === 2 && <Medal className="h-4 w-4 text-orange-500" />}
-                            {index > 2 && <span className="text-sm font-semibold">{index + 1}</span>}
-                          </div>
-                          <div>
-                            <div className="font-medium">{member.name}</div>
-                            <div className="text-sm text-gray-500">
-                              {member.completedTasks} tarefas concluídas
+                    {getLeaderboard().length > 0 ? (
+                      getLeaderboard().map((member, index) => (
+                        <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full">
+                              {index === 0 && <Crown className="h-4 w-4 text-yellow-500" />}
+                              {index === 1 && <Medal className="h-4 w-4 text-gray-400" />}
+                              {index === 2 && <Medal className="h-4 w-4 text-orange-500" />}
+                              {index > 2 && <span className="text-sm font-semibold">{index + 1}</span>}
+                            </div>
+                            <div>
+                              <div className="font-medium">{member.name}</div>
+                              <div className="text-sm text-gray-500">
+                                {member.completedTasks} tarefas concluídas
+                              </div>
                             </div>
                           </div>
+                          <div className="text-right">
+                            <div className="font-semibold text-yellow-600">{member.points}</div>
+                            <div className="text-xs text-gray-500">pontos</div>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-yellow-600">{member.points}</div>
-                          <div className="text-xs text-gray-500">pontos</div>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-gray-500 py-4">
+                        Nenhum membro da família ainda
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -426,28 +384,34 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {getWeeklyLeaderboard().map((member, index) => (
-                      <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full">
-                            {index === 0 && <Crown className="h-4 w-4 text-blue-500" />}
-                            {index === 1 && <Medal className="h-4 w-4 text-gray-400" />}
-                            {index === 2 && <Medal className="h-4 w-4 text-orange-500" />}
-                            {index > 2 && <span className="text-sm font-semibold">{index + 1}</span>}
-                          </div>
-                          <div>
-                            <div className="font-medium">{member.name}</div>
-                            <div className="text-sm text-gray-500">
-                              {member.pendingTasks} tarefas pendentes
+                    {getWeeklyLeaderboard().length > 0 ? (
+                      getWeeklyLeaderboard().map((member, index) => (
+                        <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full">
+                              {index === 0 && <Crown className="h-4 w-4 text-blue-500" />}
+                              {index === 1 && <Medal className="h-4 w-4 text-gray-400" />}
+                              {index === 2 && <Medal className="h-4 w-4 text-orange-500" />}
+                              {index > 2 && <span className="text-sm font-semibold">{index + 1}</span>}
+                            </div>
+                            <div>
+                              <div className="font-medium">{member.name}</div>
+                              <div className="text-sm text-gray-500">
+                                {member.pendingTasks} tarefas pendentes
+                              </div>
                             </div>
                           </div>
+                          <div className="text-right">
+                            <div className="font-semibold text-blue-600">{member.weeklyPoints}</div>
+                            <div className="text-xs text-gray-500">esta semana</div>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-blue-600">{member.weeklyPoints}</div>
-                          <div className="text-xs text-gray-500">esta semana</div>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-gray-500 py-4">
+                        Nenhum membro da família ainda
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -546,6 +510,16 @@ const Admin = () => {
                             placeholder="email@exemplo.com" 
                             value={newMemberEmail}
                             onChange={(e) => setNewMemberEmail(e.target.value)}
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="password">Senha</Label>
+                          <Input 
+                            id="password" 
+                            type="password" 
+                            placeholder="Senha do membro" 
+                            value={newMemberPassword}
+                            onChange={(e) => setNewMemberPassword(e.target.value)}
                           />
                         </div>
                         <Button type="submit" className="w-full">
@@ -696,102 +670,6 @@ const Admin = () => {
                         </div>
                         <Button type="submit" className="w-full">
                           <Plus className="mr-2 h-4 w-4" /> Atribuir Tarefa
-                        </Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Rewards Tab */}
-          <TabsContent value="rewards">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recompensas Disponíveis</CardTitle>
-                    <CardDescription>Gerencie as recompensas que os membros podem resgatar</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Nome</TableHead>
-                          <TableHead>Descrição</TableHead>
-                          <TableHead>Pontos</TableHead>
-                          <TableHead>Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {rewards.map((reward) => (
-                          <TableRow key={reward.id}>
-                            <TableCell className="font-medium">{reward.name}</TableCell>
-                            <TableCell>{reward.description}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                                {reward.points}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Button 
-                                variant="destructive" 
-                                size="icon"
-                                onClick={() => handleRemoveReward(reward.id)}
-                              >
-                                <Trash className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </div>
-              
-              <div>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Adicionar Recompensa</CardTitle>
-                    <CardDescription>Crie uma nova recompensa para os membros resgatarem</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleAddReward}>
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="reward-name">Nome da Recompensa</Label>
-                          <Input 
-                            id="reward-name" 
-                            placeholder="Nome da recompensa" 
-                            value={newRewardName}
-                            onChange={(e) => setNewRewardName(e.target.value)}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="reward-points">Pontos Necessários</Label>
-                          <Input 
-                            id="reward-points" 
-                            type="number"
-                            min="0"
-                            placeholder="Pontos necessários" 
-                            value={newRewardPoints}
-                            onChange={(e) => setNewRewardPoints(e.target.value)}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="reward-description">Descrição</Label>
-                          <Input 
-                            id="reward-description" 
-                            placeholder="Descrição da recompensa" 
-                            value={newRewardDescription}
-                            onChange={(e) => setNewRewardDescription(e.target.value)}
-                          />
-                        </div>
-                        <Button type="submit" className="w-full">
-                          <Plus className="mr-2 h-4 w-4" /> Adicionar Recompensa
                         </Button>
                       </div>
                     </form>

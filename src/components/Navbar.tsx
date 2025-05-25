@@ -1,126 +1,82 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, CheckSquare, Home, Plus, Users } from 'lucide-react';
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Home, User, Settings, LogOut } from 'lucide-react';
+import { toast } from 'sonner';
 
-const Navbar: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+const Navbar = () => {
+  const navigate = useNavigate();
   const location = useLocation();
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const isAdmin = currentUser?.role === 'admin';
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  // Close menu when route changes
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location]);
-
-  const navLinks = [
-    { path: '/', label: 'Início', icon: <Home className="w-5 h-5" /> },
-    { path: '/nova-tarefa', label: 'Nova Tarefa', icon: <Plus className="w-5 h-5" /> },
-    { path: '/tarefas', label: 'Tarefas da Família', icon: <CheckSquare className="w-5 h-5" /> },
-  ];
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
+    toast.success('Logout realizado com sucesso');
+    navigate('/login');
+  };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md transition-all duration-300 ${scrolled ? 'shadow-sm' : ''}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-primary rounded-md p-1.5">
-              <CheckSquare className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-xl tracking-tight">Tasker</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`flex items-center space-x-1 py-2 text-sm font-medium transition-colors hover:text-primary ${
-                  location.pathname === link.path ? 'text-primary border-b-2 border-primary' : 'text-gray-600'
-                }`}
-              >
-                {link.icon}
-                <span>{link.label}</span>
-              </Link>
-            ))}
-          </nav>
-
-          {/* Admin Link (Desktop) */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              to="/admin"
-              className={`flex items-center space-x-1 py-2 text-sm font-medium transition-colors hover:text-primary ${
-                location.pathname === '/admin' ? 'text-primary border-b-2 border-primary' : 'text-gray-600'
-              }`}
-            >
-              <Users className="w-5 h-5" />
-              <span>Painel Familiar</span>
-            </Link>
+    <nav className="fixed top-0 w-full bg-white shadow-sm border-b z-50">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-xl font-bold text-indigo-600">FamilyTasks</h1>
+            {isAdmin && (
+              <Badge variant="outline" className="bg-indigo-50 text-indigo-700">
+                Admin
+              </Badge>
+            )}
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden rounded-md p-2 focus:outline-none"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          
+          <div className="flex items-center space-x-4">
+            <Button
+              variant={location.pathname === '/' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => navigate('/')}
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Início
+            </Button>
+            
+            {isAdmin && (
+              <Button
+                variant={location.pathname === '/admin' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => navigate('/admin')}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Admin
+              </Button>
+            )}
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <User className="h-4 w-4 mr-2" />
+                  {currentUser?.name || 'Usuário'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair da Conta
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
-
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden animate-fade-in">
-          <div className="bg-white border-t px-2 pt-2 pb-3 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium ${
-                  location.pathname === link.path
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {link.icon}
-                <span>{link.label}</span>
-              </Link>
-            ))}
-            <Link
-              to="/admin"
-              className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium ${
-                location.pathname === '/admin'
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <Users className="w-5 h-5" />
-              <span>Painel Familiar</span>
-            </Link>
-          </div>
-        </div>
-      )}
-    </header>
+    </nav>
   );
 };
 
