@@ -4,7 +4,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   Users,
   Shield,
-  UserPlus
+  UserPlus,
+  Mail,
+  Lock,
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +19,9 @@ import { toast } from '@/hooks/use-toast';
 const Register = () => {
   const navigate = useNavigate();
   const [familyName, setFamilyName] = useState('');
+  const [responsibleName, setResponsibleName] = useState('');
+  const [responsibleEmail, setResponsibleEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [familyCode, setFamilyCode] = useState('');
@@ -31,8 +37,23 @@ const Register = () => {
     setError('');
     
     // Basic validation
-    if (!familyName) {
-      setError('O nome da família é obrigatório.');
+    if (!familyName || !responsibleName || !responsibleEmail || !password) {
+      setError('Todos os campos são obrigatórios.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(responsibleEmail)) {
+      setError('Por favor, insira um e-mail válido.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Password validation
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
       setIsLoading(false);
       return;
     }
@@ -47,6 +68,8 @@ const Register = () => {
       // Store family data
       const familyData = {
         name: familyName,
+        responsible: responsibleName,
+        email: responsibleEmail,
         code: newFamilyCode,
         createdAt: new Date().toISOString(),
       };
@@ -135,6 +158,56 @@ const Register = () => {
                   className="pl-10" 
                   value={familyName}
                   onChange={(e) => setFamilyName(e.target.value)}
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="responsibleName">Responsável pela Família</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <Input 
+                  id="responsibleName"
+                  placeholder="João Silva" 
+                  className="pl-10" 
+                  value={responsibleName}
+                  onChange={(e) => setResponsibleName(e.target.value)}
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="responsibleEmail">Gmail do Responsável</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <Input 
+                  id="responsibleEmail"
+                  type="email"
+                  placeholder="joao@gmail.com" 
+                  className="pl-10" 
+                  value={responsibleEmail}
+                  onChange={(e) => setResponsibleEmail(e.target.value)}
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <Input 
+                  id="password"
+                  type="password"
+                  placeholder="••••••••" 
+                  className="pl-10" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
                   required
                 />
