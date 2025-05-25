@@ -44,7 +44,9 @@ import {
   Key,
   BarChart3,
   Target,
-  Award
+  Award,
+  UserCog,
+  Minus
 } from 'lucide-react';
 import Navbar from "@/components/Navbar";
 import { toast } from 'sonner';
@@ -211,6 +213,45 @@ const Admin = () => {
       )
     );
     toast.success(`${points} pontos adicionados`);
+  };
+
+  // Remove points from a family member
+  const handleRemovePoints = (memberId: string, points: number) => {
+    setFamilyMembers(
+      familyMembers.map(member => 
+        member.id === memberId 
+          ? { 
+              ...member, 
+              points: Math.max(0, member.points - points), 
+              weeklyPoints: Math.max(0, member.weeklyPoints - points) 
+            } 
+          : member
+      )
+    );
+    toast.success(`${points} pontos removidos`);
+  };
+
+  // Toggle member role between admin and child
+  const handleToggleRole = (memberId: string) => {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    // Don't allow changing the current user's own role
+    if (currentUser.email === familyMembers.find(m => m.id === memberId)?.email) {
+      toast.error('Você não pode alterar seu próprio papel');
+      return;
+    }
+
+    setFamilyMembers(
+      familyMembers.map(member => 
+        member.id === memberId 
+          ? { ...member, role: member.role === 'admin' ? 'child' : 'admin' } 
+          : member
+      )
+    );
+    
+    const member = familyMembers.find(m => m.id === memberId);
+    const newRole = member?.role === 'admin' ? 'Membro' : 'Administrador';
+    toast.success(`Papel alterado para ${newRole}`);
   };
 
   return (
@@ -457,20 +498,33 @@ const Admin = () => {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="flex space-x-2">
+                              <div className="flex space-x-1">
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
                                   onClick={() => handleAwardPoints(member.id, 50)}
-                                  disabled={member.role === 'admin'}
                                 >
-                                  +50 pontos
+                                  +50
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => handleRemovePoints(member.id, 50)}
+                                >
+                                  <Minus className="h-4 w-4" />
+                                  50
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => handleToggleRole(member.id)}
+                                >
+                                  <UserCog className="h-4 w-4" />
                                 </Button>
                                 <Button 
                                   variant="destructive" 
-                                  size="icon" 
+                                  size="sm" 
                                   onClick={() => handleRemoveMember(member.id)}
-                                  disabled={member.role === 'admin'}
                                 >
                                   <Trash className="h-4 w-4" />
                                 </Button>
