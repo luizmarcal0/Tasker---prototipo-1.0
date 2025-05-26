@@ -10,7 +10,7 @@ const NewTaskButton: React.FC = () => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const isAdmin = currentUser?.role === 'admin';
 
-  // Only render for admins
+  // Only render for admins (leaders)
   if (!isAdmin) {
     return null;
   }

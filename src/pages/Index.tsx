@@ -15,7 +15,6 @@ const Index = () => {
 
   // Get the current user from localStorage
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  const familyName = currentUser?.familyName || 'Sua Família';
   const isAdmin = currentUser?.role === 'admin';
 
   // Add sample tasks if none exist
@@ -43,16 +42,16 @@ const Index = () => {
         <section className="mb-12 text-center">
           <div className="max-w-3xl mx-auto animate-fade-in">
             <h1 className="text-4xl font-bold mb-4 tracking-tight">
-              Organize sua Família com o Tasker
+              Organize sua Casa com o Tasker
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              Distribua tarefas, acompanhe o progresso e recompense membros da família.
+              Distribua tarefas, acompanhe o progresso e recompense membros da casa.
             </p>
           </div>
           
           {/* Features - Only show admin features to admins */}
           <div className="grid md:grid-cols-3 gap-6 mt-8">
-            {isAdmin ? [
+            {(isAdmin ? [
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Distribua Tarefas',
@@ -90,7 +89,7 @@ const Index = () => {
                 description: 'Veja tarefas concluídas',
                 onClick: () => navigate('/tarefas')
               }
-            ].map((feature, index) => (
+            ]).map((feature, index) => (
               <Button 
                 key={index}
                 onClick={feature.onClick}
@@ -109,7 +108,7 @@ const Index = () => {
         {/* Tasks section */}
         <section className="glass-panel rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Tarefas da Família {familyName}</h2>
+            <h2 className="text-2xl font-bold">Tarefas da Casa</h2>
             {isAdmin && (
               <Button 
                 onClick={() => navigate('/nova-tarefa')}
