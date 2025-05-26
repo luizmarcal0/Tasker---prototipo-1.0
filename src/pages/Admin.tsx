@@ -10,12 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
-  Trophy,
-  Crown,
-  Medal,
   BarChart3,
-  Target,
-  Award,
   Check
 } from 'lucide-react';
 import Navbar from "@/components/Navbar";
@@ -28,7 +23,7 @@ const MOCK_FAMILY_MEMBERS = [
   { 
     id: '1', 
     name: 'Luiz Inacio Lula da Silva', 
-    email: 'admin@familia.com', 
+    email: 'admin@tasker.com', 
     role: 'admin', 
     points: 500,
     completedTasks: 15,
@@ -60,7 +55,7 @@ const Admin = () => {
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Painel Administrativo da Família</h1>
+          <h1 className="text-2xl font-bold">Tasker</h1>
           <Badge className="bg-indigo-600">Administrador</Badge>
         </div>
         
@@ -72,7 +67,7 @@ const Admin = () => {
             </TabsTrigger>
             <TabsTrigger value="family">
               <Users className="mr-2 h-4 w-4" />
-              Família
+              Membros
             </TabsTrigger>
             <TabsTrigger value="tasks">
               <Check className="mr-2 h-4 w-4" />

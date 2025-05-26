@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -20,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTaskContext, TaskCategory } from "../../context/TaskContext";
-import { Plus, Trash, User } from 'lucide-react';
+import { Plus, Trash, User, UserX } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface TaskManagementProps {
@@ -37,7 +36,7 @@ interface TaskManagementProps {
 }
 
 const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
-  const { tasks, addTask, deleteTask, toggleTaskCompletion, categories } = useTaskContext();
+  const { tasks, addTask, deleteTask, toggleTaskCompletion, updateTask, categories } = useTaskContext();
   
   // State for new task assignment
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -79,13 +78,34 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
     toast.success('Tarefa atribuída com sucesso');
   };
 
+  // Remove task assignment (keep task but remove assignee)
+  const removeTaskAssignment = (taskId: string) => {
+    updateTask(taskId, { assignedTo: undefined, assignedToName: undefined });
+    toast.success('Atribuição removida');
+  };
+
+  // Reassign task to different member
+  const reassignTask = (taskId: string, newAssigneeId: string) => {
+    const assignedMember = familyMembers.find(m => m.id === newAssigneeId);
+    if (!assignedMember) {
+      toast.error('Membro não encontrado');
+      return;
+    }
+    
+    updateTask(taskId, { 
+      assignedTo: assignedMember.id, 
+      assignedToName: assignedMember.name 
+    });
+    toast.success('Tarefa reatribuída');
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle>Tarefas da Família</CardTitle>
-            <CardDescription>Gerencie as tarefas atribuídas aos membros da família</CardDescription>
+            <CardTitle>Gestão de Tarefas</CardTitle>
+            <CardDescription>Atribua e gerencie tarefas para membros da família</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -131,9 +151,35 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                         >
                           {task.completed ? 'Desfazer' : 'Concluir'}
                         </Button>
+                        
+                        {/* Reassign dropdown */}
+                        {familyMembers.filter(m => m.role !== 'admin').length > 0 && (
+                          <select 
+                            onChange={(e) => {
+                              if (e.target.value === 'unassign') {
+                                removeTaskAssignment(task.id);
+                              } else if (e.target.value !== '') {
+                                reassignTask(task.id, e.target.value);
+                              }
+                              e.target.value = '';
+                            }}
+                            className="text-xs px-2 py-1 border rounded"
+                          >
+                            <option value="">Atribuir</option>
+                            {familyMembers.filter(m => m.role !== 'admin').map((member) => (
+                              <option key={member.id} value={member.id}>
+                                {member.name}
+                              </option>
+                            ))}
+                            {task.assignedTo && (
+                              <option value="unassign">❌ Remover atribuição</option>
+                            )}
+                          </select>
+                        )}
+                        
                         <Button 
                           variant="destructive" 
-                          size="icon"
+                          size="sm"
                           onClick={() => deleteTask(task.id)}
                         >
                           <Trash className="h-4 w-4" />
@@ -145,7 +191,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                 {tasks.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-4 text-gray-500">
-                      Nenhuma tarefa atribuída ainda
+                      Nenhuma tarefa criada ainda
                     </TableCell>
                   </TableRow>
                 )}
