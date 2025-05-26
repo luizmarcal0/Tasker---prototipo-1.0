@@ -30,10 +30,10 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-bold text-indigo-600">Tasker</h1>
+            <h1 className="text-xl font-bold text-blue-600">Tasker</h1>
             {isAdmin && (
-              <Badge variant="outline" className="bg-indigo-50 text-indigo-700">
-                Admin
+              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                Líder
               </Badge>
             )}
           </div>
@@ -55,7 +55,7 @@ const Navbar = () => {
                 onClick={() => navigate('/admin')}
               >
                 <Settings className="h-4 w-4 mr-2" />
-                Admin
+                Administrar
               </Button>
             )}
             

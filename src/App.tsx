@@ -20,34 +20,34 @@ import TaskList from "./components/TaskList";
 
 const queryClient = new QueryClient();
 
-// Create a FamilyTaskPage component for listing all tasks
-const FamilyTaskPage = () => {
+// Create a TaskPage component for listing all tasks
+const TaskPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Tarefas da Família</h1>
+        <h1 className="text-2xl font-bold mb-6">Tarefas da Casa</h1>
         <TaskList />
       </main>
     </div>
   );
 };
 
-// Create a NewFamilyTaskPage component for creating a new task
-const NewFamilyTaskPage = () => {
+// Create a NewTaskPage component for creating a new task (ADMIN ONLY)
+const NewTaskPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Nova Tarefa Familiar</h1>
+        <h1 className="text-2xl font-bold mb-6">Nova Tarefa</h1>
         <TaskForm />
       </main>
     </div>
   );
 };
 
-// Create an EditFamilyTaskPage component for editing a task
-const EditFamilyTaskPage = () => {
+// Create an EditTaskPage component for editing a task (ADMIN ONLY)
+const EditTaskPage = () => {
   const { id } = useParams<{ id: string }>();
   const { tasks } = useTaskContext();
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ const EditFamilyTaskPage = () => {
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Editar Tarefa Familiar</h1>
+        <h1 className="text-2xl font-bold mb-6">Editar Tarefa</h1>
         <TaskForm initialData={task} isEditing={true} />
       </main>
     </div>
@@ -81,7 +81,7 @@ const ScrollToTop = () => {
 };
 
 // Protected route component to check if user is logged in
-const FamilyMemberRoute = ({ children }: { children: React.ReactNode }) => {
+const MemberRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   
   if (!isLoggedIn) {
@@ -91,8 +91,8 @@ const FamilyMemberRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Admin route component to check if user is a family admin
-const FamilyAdminRoute = ({ children }: { children: React.ReactNode }) => {
+// Admin route component to check if user is an admin
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const isAdmin = currentUser?.role === 'admin';
@@ -120,34 +120,34 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Register />} />
             <Route path="/" element={
-              <FamilyMemberRoute>
+              <MemberRoute>
                 <Index />
-              </FamilyMemberRoute>
+              </MemberRoute>
             } />
             <Route path="/tarefas" element={
-              <FamilyMemberRoute>
-                <FamilyTaskPage />
-              </FamilyMemberRoute>
+              <MemberRoute>
+                <TaskPage />
+              </MemberRoute>
             } />
             <Route path="/nova-tarefa" element={
-              <FamilyAdminRoute>
-                <NewFamilyTaskPage />
-              </FamilyAdminRoute>
+              <AdminRoute>
+                <NewTaskPage />
+              </AdminRoute>
             } />
             <Route path="/tarefas/:id" element={
-              <FamilyMemberRoute>
+              <MemberRoute>
                 <TaskDetail />
-              </FamilyMemberRoute>
+              </MemberRoute>
             } />
             <Route path="/tarefas/:id/editar" element={
-              <FamilyAdminRoute>
-                <EditFamilyTaskPage />
-              </FamilyAdminRoute>
+              <AdminRoute>
+                <EditTaskPage />
+              </AdminRoute>
             } />
             <Route path="/admin" element={
-              <FamilyAdminRoute>
+              <AdminRoute>
                 <Admin />
-              </FamilyAdminRoute>
+              </AdminRoute>
             } />
             <Route path="*" element={<NotFound />} />
           </Routes>

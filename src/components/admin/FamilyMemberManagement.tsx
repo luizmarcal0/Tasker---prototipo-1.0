@@ -49,14 +49,20 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
 }) => {
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberPassword, setNewMemberPassword] = useState('');
   const [customPoints, setCustomPoints] = useState<{ [key: string]: string }>({});
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
   const addFamilyMember = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newMemberName || !newMemberEmail) {
+    if (!newMemberName || !newMemberEmail || !newMemberPassword) {
       toast.error('Por favor preencha todos os campos');
+      return;
+    }
+
+    if (newMemberPassword.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
       return;
     }
 
@@ -74,6 +80,7 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
     setFamilyMembers(prev => [...prev, newMember]);
     setNewMemberName('');
     setNewMemberEmail('');
+    setNewMemberPassword('');
     toast.success('Membro adicionado com sucesso');
   };
 
@@ -126,7 +133,7 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
       <div className="lg:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle>Membros da Família</CardTitle>
+            <CardTitle>Membros da Casa</CardTitle>
             <CardDescription>Gerencie os membros e suas permissões</CardDescription>
           </CardHeader>
           <CardContent>
@@ -150,7 +157,7 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
                         {member.role === 'admin' ? (
                           <>
                             <Crown className="w-3 h-3 mr-1" />
-                            Administrador
+                            Líder
                           </>
                         ) : (
                           <>
@@ -169,7 +176,7 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
                           onClick={() => toggleRole(member.id)}
                           disabled={member.id === currentUser.id}
                         >
-                          {member.role === 'admin' ? 'Tornar Membro' : 'Tornar Admin'}
+                          {member.role === 'admin' ? 'Tornar Membro' : 'Tornar Líder'}
                         </Button>
                         
                         <Popover>
@@ -253,7 +260,7 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
         <Card>
           <CardHeader>
             <CardTitle>Adicionar Membro</CardTitle>
-            <CardDescription>Convide um novo membro para a família</CardDescription>
+            <CardDescription>Convide um novo membro para a casa</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={addFamilyMember}>
@@ -275,6 +282,16 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
                     placeholder="email@exemplo.com" 
                     value={newMemberEmail}
                     onChange={(e) => setNewMemberEmail(e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="member-password">Senha</Label>
+                  <Input 
+                    id="member-password" 
+                    type="password"
+                    placeholder="••••••••" 
+                    value={newMemberPassword}
+                    onChange={(e) => setNewMemberPassword(e.target.value)}
                   />
                 </div>
                 <Button type="submit" className="w-full">

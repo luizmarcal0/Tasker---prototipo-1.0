@@ -56,14 +56,14 @@ const Admin = () => {
       <main className="pt-20 pb-24 px-4 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Tasker</h1>
-          <Badge className="bg-indigo-600">Líder</Badge>
+          <Badge className="bg-blue-600">Líder</Badge>
         </div>
         
         <Tabs defaultValue="dashboard" className="w-full">
           <TabsList className="grid grid-cols-3 mb-8">
             <TabsTrigger value="dashboard">
               <BarChart3 className="mr-2 h-4 w-4" />
-              Dashboard
+              Painel
             </TabsTrigger>
             <TabsTrigger value="family">
               <Users className="mr-2 h-4 w-4" />

@@ -54,16 +54,16 @@ const TaskList: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Tabs */}
+      {/* Abas */}
       <Tabs defaultValue="active" className="w-full" value={activeTab} onValueChange={setActiveTab}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0 mb-6">
           <TabsList className="mb-2">
-            <TabsTrigger value="active" className="px-6">Tarefas Ativas</TabsTrigger>
+            <TabsTrigger value="active" className="px-6">Tarefas Pendentes</TabsTrigger>
             <TabsTrigger value="completed" className="px-6">Concluídas</TabsTrigger>
           </TabsList>
           
           <div className="flex space-x-2">
-            {/* Sort dropdown */}
+            {/* Menu de ordenação */}
             <div className="relative">
               <select
                 value={sortBy}
@@ -79,7 +79,7 @@ const TaskList: React.FC = () => {
               <SortDescIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
             </div>
             
-            {/* Filter button */}
+            {/* Botão de filtros */}
             <button 
               className="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-md text-sm bg-white hover:bg-gray-50"
               onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
@@ -88,7 +88,7 @@ const TaskList: React.FC = () => {
               Filtros
             </button>
             
-            {/* Manage Categories button */}
+            {/* Botão de gerenciar categorias */}
             <button 
               className="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-md text-sm bg-white hover:bg-gray-50"
               onClick={() => setIsCategoryDialogOpen(true)}
@@ -99,11 +99,11 @@ const TaskList: React.FC = () => {
           </div>
         </div>
         
-        {/* Filter dropdown */}
+        {/* Menu suspenso de filtros */}
         {isFilterMenuOpen && (
           <div className="bg-white rounded-md shadow-sm border p-4 mb-4 animate-scale-in">
             <div className="grid gap-4 sm:grid-cols-1">
-              {/* Category filter */}
+              {/* Filtro de categoria */}
               <div>
                 <label className="block text-sm font-medium mb-1">Categoria</label>
                 <div className="flex flex-wrap gap-2">
@@ -126,11 +126,11 @@ const TaskList: React.FC = () => {
           </div>
         )}
         
-        {/* Active Tasks Tab */}
+        {/* Aba de Tarefas Pendentes */}
         <TabsContent value="active" className="mt-2">
           <h2 className="text-xl font-semibold flex items-center mb-4">
             <CheckSquare className="mr-2 h-5 w-5" />
-            {selectedCategory === 'all' ? 'Tarefas Ativas' : `Tarefas Ativas: ${categoryOptions.find(c => c.value === selectedCategory)?.label}`}
+            {selectedCategory === 'all' ? 'Tarefas Pendentes' : `Tarefas Pendentes: ${categoryOptions.find(c => c.value === selectedCategory)?.label}`}
           </h2>
           
           {filteredTasks.length === 0 ? (
@@ -138,7 +138,7 @@ const TaskList: React.FC = () => {
               <div className="text-gray-400 mb-2">
                 <CheckSquare className="h-12 w-12 mx-auto opacity-30" />
               </div>
-              <h3 className="text-lg font-medium text-gray-600">Nenhuma tarefa ativa encontrada</h3>
+              <h3 className="text-lg font-medium text-gray-600">Nenhuma tarefa pendente encontrada</h3>
               <p className="text-gray-500 mt-1">
                 {tasks.filter(t => !t.completed).length === 0 
                   ? 'Crie uma nova tarefa para começar' 
@@ -154,7 +154,7 @@ const TaskList: React.FC = () => {
           )}
         </TabsContent>
         
-        {/* Completed Tasks Tab */}
+        {/* Aba de Tarefas Concluídas */}
         <TabsContent value="completed" className="mt-2">
           <h2 className="text-xl font-semibold flex items-center mb-4">
             <CheckSquare className="mr-2 h-5 w-5" />
@@ -183,7 +183,7 @@ const TaskList: React.FC = () => {
         </TabsContent>
       </Tabs>
       
-      {/* Category Management Dialog */}
+      {/* Diálogo de Gerenciamento de Categorias */}
       <CategoryDialog 
         open={isCategoryDialogOpen} 
         onOpenChange={setIsCategoryDialogOpen} 
