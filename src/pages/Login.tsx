@@ -14,7 +14,6 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [familyCode, setFamilyCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,19 +31,15 @@ const Login = () => {
       return;
     }
 
-    if (loginType === 'member' && !familyCode) {
-      setError('Código da família é obrigatório para membros.');
-      setIsLoading(false);
-      return;
-    }
-
     setTimeout(() => {
       // Simple login logic - accept any valid email/password combination
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('currentUser', JSON.stringify({
+        id: loginType === 'admin' ? '1' : '2',
+        name: loginType === 'admin' ? 'Administrador' : 'Membro',
         email: email,
         role: loginType,
-        familyId: loginType === 'member' ? familyCode : 'admin-family'
+        points: loginType === 'admin' ? 500 : 100
       }));
       
       toast({
@@ -104,23 +99,6 @@ const Login = () => {
                         className="pl-10"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={isLoading}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="family-code">Código da Família</Label>
-                    <div className="relative">
-                      <Users className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="family-code"
-                        type="text"
-                        placeholder="FMLY123"
-                        className="pl-10"
-                        value={familyCode}
-                        onChange={(e) => setFamilyCode(e.target.value.toUpperCase())}
                         required
                         disabled={isLoading}
                       />

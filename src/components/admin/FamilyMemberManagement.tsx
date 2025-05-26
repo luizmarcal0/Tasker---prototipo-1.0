@@ -24,7 +24,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { UserPlus, Crown, User, Plus, Minus, Trash } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { UserPlus, Crown, User, Plus, Minus, Trash, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface FamilyMember {
@@ -51,6 +60,11 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newMemberPassword, setNewMemberPassword] = useState('');
   const [customPoints, setCustomPoints] = useState<{ [key: string]: string }>({});
+  const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
   const addFamilyMember = (e: React.FormEvent) => {
@@ -82,6 +96,41 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
     setNewMemberEmail('');
     setNewMemberPassword('');
     toast.success('Membro adicionado com sucesso');
+  };
+
+  const openEditDialog = (member: FamilyMember) => {
+    setEditingMember(member);
+    setEditName(member.name);
+    setEditEmail(member.email);
+    setEditPassword('');
+    setIsEditDialogOpen(true);
+  };
+
+  const saveEditedMember = () => {
+    if (!editingMember) return;
+    
+    if (!editName || !editEmail) {
+      toast.error('Nome e email são obrigatórios');
+      return;
+    }
+
+    if (editPassword && editPassword.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    setFamilyMembers(prev => prev.map(member => 
+      member.id === editingMember.id 
+        ? { ...member, name: editName, email: editEmail }
+        : member
+    ));
+
+    setIsEditDialogOpen(false);
+    setEditingMember(null);
+    setEditName('');
+    setEditEmail('');
+    setEditPassword('');
+    toast.success('Informações atualizadas com sucesso');
   };
 
   const toggleRole = (memberId: string) => {
@@ -170,6 +219,14 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
                     <TableCell>{member.points}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => openEditDialog(member)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -302,6 +359,58 @@ const FamilyMemberManagement: React.FC<FamilyMemberManagementProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de Edição */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Informações do Membro</DialogTitle>
+            <DialogDescription>
+              Faça alterações nas informações do membro aqui. Clique em salvar quando terminar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-name">Nome</Label>
+              <Input
+                id="edit-name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Nome do membro"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+                placeholder="email@exemplo.com"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-password">Nova Senha (opcional)</Label>
+              <Input
+                id="edit-password"
+                type="password"
+                value={editPassword}
+                onChange={(e) => setEditPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+              <p className="text-sm text-gray-500">Deixe em branco para manter a senha atual</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button type="button" onClick={saveEditedMember}>
+              Salvar Alterações
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
