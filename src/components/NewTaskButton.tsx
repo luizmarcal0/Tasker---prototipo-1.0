@@ -7,6 +7,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 const NewTaskButton: React.FC = () => {
   const navigate = useNavigate();
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const isAdmin = currentUser?.role === 'admin';
+
+  // Only render for admins
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <TooltipProvider>

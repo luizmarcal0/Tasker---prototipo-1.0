@@ -130,9 +130,9 @@ const App = () => (
               </FamilyMemberRoute>
             } />
             <Route path="/nova-tarefa" element={
-              <FamilyMemberRoute>
+              <FamilyAdminRoute>
                 <NewFamilyTaskPage />
-              </FamilyMemberRoute>
+              </FamilyAdminRoute>
             } />
             <Route path="/tarefas/:id" element={
               <FamilyMemberRoute>
@@ -140,9 +140,9 @@ const App = () => (
               </FamilyMemberRoute>
             } />
             <Route path="/tarefas/:id/editar" element={
-              <FamilyMemberRoute>
+              <FamilyAdminRoute>
                 <EditFamilyTaskPage />
-              </FamilyMemberRoute>
+              </FamilyAdminRoute>
             } />
             <Route path="/admin" element={
               <FamilyAdminRoute>

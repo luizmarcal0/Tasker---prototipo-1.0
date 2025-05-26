@@ -13,6 +13,11 @@ const Index = () => {
   const { tasks, addTask } = useTaskContext();
   const navigate = useNavigate();
 
+  // Get the current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const familyName = currentUser?.familyName || 'Sua Família';
+  const isAdmin = currentUser?.role === 'admin';
+
   // Add sample tasks if none exist
   useEffect(() => {
     if (tasks.length === 0) {
@@ -28,10 +33,6 @@ const Index = () => {
       });
     }
   }, []);
-
-  // Get the current user from localStorage
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  const familyName = currentUser?.familyName || 'Sua Família';
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -49,9 +50,9 @@ const Index = () => {
             </p>
           </div>
           
-          {/* Features */}
+          {/* Features - Only show admin features to admins */}
           <div className="grid md:grid-cols-3 gap-6 mt-8">
-            {[
+            {isAdmin ? [
               {
                 icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
                 title: 'Distribua Tarefas',
@@ -69,6 +70,25 @@ const Index = () => {
                 title: 'Gerencie',
                 description: 'Acompanhe o progresso',
                 onClick: () => navigate('/admin')
+              }
+            ] : [
+              {
+                icon: <CheckSquare className="h-8 w-8 text-blue-500" />,
+                title: 'Suas Tarefas',
+                description: 'Veja suas tarefas pendentes',
+                onClick: () => navigate('/tarefas')
+              },
+              {
+                icon: <Star className="h-8 w-8 text-yellow-500" />,
+                title: 'Seus Pontos',
+                description: 'Acompanhe sua pontuação',
+                onClick: () => navigate('/')
+              },
+              {
+                icon: <Clock className="h-8 w-8 text-purple-500" />,
+                title: 'Histórico',
+                description: 'Veja tarefas concluídas',
+                onClick: () => navigate('/tarefas')
               }
             ].map((feature, index) => (
               <Button 
@@ -90,20 +110,23 @@ const Index = () => {
         <section className="glass-panel rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Tarefas da Família {familyName}</h2>
-            <Button 
-              onClick={() => navigate('/nova-tarefa')}
-              className="flex items-center text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow-md"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Nova Tarefa
-            </Button>
+            {isAdmin && (
+              <Button 
+                onClick={() => navigate('/nova-tarefa')}
+                className="flex items-center text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Nova Tarefa
+              </Button>
+            )}
           </div>
           
           <TaskList />
         </section>
       </main>
       
-      <NewTaskButton />
+      {/* Only show floating action button for admins */}
+      {isAdmin && <NewTaskButton />}
     </div>
   );
 };

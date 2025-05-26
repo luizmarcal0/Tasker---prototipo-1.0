@@ -15,6 +15,8 @@ export interface Task {
   category: TaskCategory;
   dueDate: Date | null;
   createdAt: Date;
+  assignedTo?: string; // ID do usuário responsável
+  assignedToName?: string; // Nome do usuário responsável
 }
 
 export interface Category {

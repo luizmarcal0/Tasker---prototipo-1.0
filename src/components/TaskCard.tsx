@@ -2,7 +2,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Check, Clock, Calendar, MoreVertical } from 'lucide-react';
+import { Check, Clock, Calendar, MoreVertical, User } from 'lucide-react';
 import { Task, useTaskContext } from '../context/TaskContext';
 import { formatDate, getPriorityLabel } from '../lib/tasks';
 import { useNavigate } from 'react-router-dom';
@@ -60,8 +60,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
               </button>
             </div>
             
-            {/* Category badge */}
-            <div className="mb-2">
+            <div className="flex items-center space-x-2 mb-2">
+              {/* Category badge */}
               <span 
                 className="inline-flex text-xs py-1 px-2.5 rounded-full text-white font-medium"
                 style={{ 
@@ -70,6 +70,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
               >
                 {categoryInfo?.name || task.category}
               </span>
+              
+              {/* Assigned user */}
+              {task.assignedToName && (
+                <span className="inline-flex items-center text-xs py-1 px-2.5 rounded-full bg-blue-100 text-blue-800 font-medium">
+                  <User className="w-3 h-3 mr-1" />
+                  {task.assignedToName}
+                </span>
+              )}
             </div>
             
             {/* Description (truncated) */}
