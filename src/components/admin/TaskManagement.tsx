@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -160,7 +161,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                       <div className="flex items-center">
                         {task.title}
                         {task.isGeneralTask && (
-                          <Users className="h-4 w-4 ml-2 text-blue-500" title="Tarefa geral" />
+                          <Users className="h-4 w-4 ml-2 text-blue-500" />
                         )}
                       </div>
                     </TableCell>
