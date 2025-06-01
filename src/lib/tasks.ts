@@ -78,10 +78,14 @@ export const getPriorityLabel = (priority: TaskPriority): string => {
   return labels[priority];
 };
 
-// Helper to get category label
-export const getCategoryLabel = (category: TaskCategory): string => {
-  // Esta função agora é dinâmica e busca o nome da categoria no contexto
-  // Mantida para compatibilidade, mas deve ser atualizada nos locais de uso
+// Helper to get category label - função auxiliar para componentes que não têm acesso ao contexto
+export const getCategoryLabel = (category: TaskCategory, categories?: Array<{id: string, name: string}>): string => {
+  if (categories) {
+    const foundCategory = categories.find(cat => cat.id === category);
+    return foundCategory ? foundCategory.name : category;
+  }
+  
+  // Fallback para compatibilidade
   const defaultLabels: Record<string, string> = {
     work: 'Trabalho',
     personal: 'Pessoal', 

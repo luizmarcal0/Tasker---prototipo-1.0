@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -44,6 +45,12 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
   const [newTaskAssignee, setNewTaskAssignee] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState('');
   const [newTaskCategory, setNewTaskCategory] = useState<TaskCategory>('personal');
+
+  // Helper function to get category name by ID
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : categoryId;
+  };
 
   // Assign task to family member
   const handleAssignTask = (e: React.FormEvent) => {
@@ -133,7 +140,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{task.category}</Badge>
+                      <Badge variant="outline">{getCategoryName(task.category)}</Badge>
                     </TableCell>
                     <TableCell>
                       {task.completed ? (
