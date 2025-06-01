@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -19,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useTaskContext, TaskCategory } from "../../context/TaskContext";
 import { Plus, Trash, User, UserX, Edit, Users } from 'lucide-react';
 import { toast } from 'sonner';
@@ -280,29 +280,23 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                   />
                 </div>
                 
-                {/* Task type selector */}
-                <div className="grid gap-2">
+                {/* Task type selector with RadioGroup */}
+                <div className="grid gap-3">
                   <Label>Tipo de Tarefa</Label>
-                  <div className="flex space-x-4">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        name="taskType"
-                        checked={!isGeneralTask}
-                        onChange={() => setIsGeneralTask(false)}
-                      />
-                      <span>Individual</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        name="taskType"
-                        checked={isGeneralTask}
-                        onChange={() => setIsGeneralTask(true)}
-                      />
-                      <span>Para todos os membros</span>
-                    </label>
-                  </div>
+                  <RadioGroup 
+                    value={isGeneralTask ? "general" : "individual"} 
+                    onValueChange={(value) => setIsGeneralTask(value === "general")}
+                    className="flex gap-6"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="individual" id="individual" />
+                      <Label htmlFor="individual">Individual</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="general" id="general" />
+                      <Label htmlFor="general">Para todos os membros</Label>
+                    </div>
+                  </RadioGroup>
                 </div>
                 
                 {/* Show assignee selector only for individual tasks */}
