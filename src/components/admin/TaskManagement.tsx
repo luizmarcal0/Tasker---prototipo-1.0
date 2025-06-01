@@ -203,7 +203,6 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                           <Edit className="h-4 w-4" />
                         </Button>
                         
-                        {/* Reassign dropdown */}
                         {familyMembers.filter(m => m.role !== 'admin').length > 0 && !task.isGeneralTask && (
                           <select 
                             onChange={(e) => {
@@ -280,7 +279,6 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                   />
                 </div>
                 
-                {/* Task type selector with RadioGroup */}
                 <div className="grid gap-3">
                   <Label>Tipo de Tarefa</Label>
                   <RadioGroup 
@@ -299,7 +297,6 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
                   </RadioGroup>
                 </div>
                 
-                {/* Show assignee selector only for individual tasks */}
                 {!isGeneralTask && (
                   <div className="grid gap-2">
                     <Label htmlFor="task-assignee">Atribuir para</Label>
@@ -355,7 +352,6 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ familyMembers }) => {
         </Card>
       </div>
       
-      {/* Edit Task Dialog */}
       {editingTask && (
         <EditTaskDialog
           taskId={editingTask}
