@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -17,6 +16,7 @@ export interface Task {
   createdAt: Date;
   assignedTo?: string; // ID do usuário responsável
   assignedToName?: string; // Nome do usuário responsável
+  isGeneralTask?: boolean; // Indica se é uma tarefa geral para todos os membros
 }
 
 export interface Category {
