@@ -55,7 +55,7 @@ const Admin = () => {
       <Navbar />
       <main className="pt-20 pb-24 px-4 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Tasker</h1>
+          <h1 className="text-2xl font-bold">Painel</h1>
           <Badge className="bg-blue-600">Líder</Badge>
         </div>
         

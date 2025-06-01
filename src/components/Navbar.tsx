@@ -55,7 +55,7 @@ const Navbar = () => {
                 onClick={() => navigate('/admin')}
               >
                 <Settings className="h-4 w-4 mr-2" />
-                Administrar
+                Painel
               </Button>
             )}
             
